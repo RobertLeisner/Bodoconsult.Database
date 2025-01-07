@@ -1,0 +1,79 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CFFA22B5-2B9A-465D-9219-D93300FF3F4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database", "Bodoconsult.Database\Bodoconsult.Database.csproj", "{1509BD33-550E-43AB-8400-A7E09C86460D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Postgres", "Bodoconsult.Database.Postgres\Bodoconsult.Database.Postgres.csproj", "{53102207-7372-4E91-AE26-9524D09633AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.SqlClient", "Bodoconsult.Database.SqlClient\Bodoconsult.Database.SqlClient.csproj", "{73AA2146-105F-4A8F-884F-44DF0F2E7C6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Sqlite", "Bodoconsult.Database.Sqlite\Bodoconsult.Database.Sqlite.csproj", "{1DAB9DE1-017D-47E0-9823-F79B63C77960}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Postgres.Test", "Tests\Bodoconsult.Database.Postgres.Test\Bodoconsult.Database.Postgres.Test.csproj", "{FEB5255B-C5C0-4885-88C7-CCA56F981B3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.SqlClient.Test", "Tests\Bodoconsult.Database.SqlClient.Test\Bodoconsult.Database.SqlClient.Test.csproj", "{2E883188-AA71-47F2-8518-3AECED06964B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Sqlite.Test", "Tests\Bodoconsult.Database.Sqlite.Test\Bodoconsult.Database.Sqlite.Test.csproj", "{798E5A94-5E7D-4644-83DE-50B3A8DB9359}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Test", "Tests\Bodoconsult.Database.Test\Bodoconsult.Database.Test.csproj", "{05C7C1DB-CA3D-4434-8AC4-04A025E29587}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{0F999B42-D060-4CD4-8AA9-1F28837214B6}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		nuget_publish.bat = nuget_publish.bat
+		Bodoconsult.Database\README.md = Bodoconsult.Database\README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1509BD33-550E-43AB-8400-A7E09C86460D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1509BD33-550E-43AB-8400-A7E09C86460D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1509BD33-550E-43AB-8400-A7E09C86460D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1509BD33-550E-43AB-8400-A7E09C86460D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53102207-7372-4E91-AE26-9524D09633AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53102207-7372-4E91-AE26-9524D09633AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53102207-7372-4E91-AE26-9524D09633AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53102207-7372-4E91-AE26-9524D09633AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73AA2146-105F-4A8F-884F-44DF0F2E7C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73AA2146-105F-4A8F-884F-44DF0F2E7C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73AA2146-105F-4A8F-884F-44DF0F2E7C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73AA2146-105F-4A8F-884F-44DF0F2E7C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DAB9DE1-017D-47E0-9823-F79B63C77960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DAB9DE1-017D-47E0-9823-F79B63C77960}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DAB9DE1-017D-47E0-9823-F79B63C77960}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DAB9DE1-017D-47E0-9823-F79B63C77960}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEB5255B-C5C0-4885-88C7-CCA56F981B3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEB5255B-C5C0-4885-88C7-CCA56F981B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEB5255B-C5C0-4885-88C7-CCA56F981B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEB5255B-C5C0-4885-88C7-CCA56F981B3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E883188-AA71-47F2-8518-3AECED06964B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E883188-AA71-47F2-8518-3AECED06964B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E883188-AA71-47F2-8518-3AECED06964B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E883188-AA71-47F2-8518-3AECED06964B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{798E5A94-5E7D-4644-83DE-50B3A8DB9359}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{798E5A94-5E7D-4644-83DE-50B3A8DB9359}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{798E5A94-5E7D-4644-83DE-50B3A8DB9359}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{798E5A94-5E7D-4644-83DE-50B3A8DB9359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05C7C1DB-CA3D-4434-8AC4-04A025E29587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05C7C1DB-CA3D-4434-8AC4-04A025E29587}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05C7C1DB-CA3D-4434-8AC4-04A025E29587}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05C7C1DB-CA3D-4434-8AC4-04A025E29587}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FEB5255B-C5C0-4885-88C7-CCA56F981B3E} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+		{2E883188-AA71-47F2-8518-3AECED06964B} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+		{798E5A94-5E7D-4644-83DE-50B3A8DB9359} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+		{05C7C1DB-CA3D-4434-8AC4-04A025E29587} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+	EndGlobalSection
+EndGlobal
