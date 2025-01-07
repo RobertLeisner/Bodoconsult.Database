@@ -348,18 +348,26 @@ EntityBackup is a simple backup solution to keep fast growing tables with a
 An example for such a table may be a table with trace log data written in. The table is growing fast. Maybe you think about keeping the trace data in this table only for one year but you may not loose the older data completely. 
 For such a case you can backup older data as CSV to disk and remove the backuped data from the table. This is what EntityBackup is intended for.
 
-#### Central class EntityBackupService<T> based on interface IEntityBackupService<T>
+There are some more implementations for IEntityBackupService<T>:
 
-EntityBackupService<T> class provides a full implementation for the getting the required data, backup it and remove it from database.
+-   CsvEntityBackupService<T>: export the data to a CSV file
 
-The main dependency for EntityBackupService<T> is the interface IEntityBackupDataService<T>. Implementations of this interface care for getting the necessary data, 
+-   XmlEntityBackupService<T>: export the data to a XML file
+
+-   JsonEntityBackupService<T>: export the data to a JSON file
+
+#### How to use CsvEntityBackupService<T> based on interface IEntityBackupService<T>
+
+CsvEntityBackupService<T> class provides a full implementation for the getting the required data, backup it and remove it from database.
+
+The main dependency for CsvEntityBackupService<T> is the interface IEntityBackupDataService<T>. Implementations of this interface care for getting the necessary data, 
 formatting a single entity and the removal of the processed entities from database.
 
 ``` csharp
 
 
         [Test]
-        public void TestBackupToCsv()
+        public void Backup_ValidSetup_FileCreated()
         {
             // Arrange 
             var from = new DateTime(2023, 7, 19);
@@ -369,7 +377,7 @@ formatting a single entity and the removal of the processed entities from databa
             var dataService = new DemoEntityEntityBackupDataService();
             GetDataForService(dataService.DemoEntities, from, to);
 
-            var backupService = new EntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup");
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup");
 
             // Act  
             backupService.BackupToCsv(from, to);
