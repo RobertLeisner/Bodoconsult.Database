@@ -3,20 +3,7 @@
 This repo is the successor of the repos Bodoconsult.Core.Database,
  Bodoconsult.Core.Database.SqlClient, Bodoconsult.Core.Database.Postgres, Bodoconsult.Core.Database.Sqlite.
 
-
-
-[Bodoconsult.Database](#BodoconsultDatabase)
-
-[Bodoconsult.Database.SqlClient](#BodoconsultDatabaseSqlClient)
-
-[Bodoconsult.Database.Postgres](#BodoconsultDatabasePostgres)
-
-[Bodoconsult.Database.Sqlite](#BodoconsultDatabaseSqlite)
-
-[About us](#about-us)
-
-
-# <a name="BodoconsultDatabase"></a>Bodoconsult.Database
+# Bodoconsult.Database
 
 ## What does the library
 
