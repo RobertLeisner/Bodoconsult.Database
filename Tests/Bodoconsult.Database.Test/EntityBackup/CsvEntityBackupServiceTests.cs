@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Bodoconsult EDV-Dienstleistungen GmbH. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using Bodoconsult.Database.EntityBackup;
 using Bodoconsult.Database.Test.Helpers;
 using NUnit.Framework;

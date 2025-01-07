@@ -8,13 +8,13 @@ Bodoconsult.Database packages simplify the access to SQL based databases.
 It handles the most common database actions like getting datatables, running SQL statement or fetch scalar values from the database.
 
 
-[Bodoconsult.Database](/../../Bodoconsult.Database/Readme.md)
+[Bodoconsult.Database](Bodoconsult.Database/Readme.md)
 
-[Bodoconsult.Database.SqlClient](/../../Bodoconsult.Database.SqlClient/Readme.md)
+[Bodoconsult.Database.SqlClient](Bodoconsult.Database.SqlClient/Readme.md)
 
-[Bodoconsult.Database.Postgres](/../../Bodoconsult.Database.Postgres/Readme.md)
+[Bodoconsult.Database.Postgres](Bodoconsult.Database.Postgres/Readme.md)
 
-[Bodoconsult.Database.Sqlite](/../../Bodoconsult.Database.Sqlite/Readme.md)
+[Bodoconsult.Database.Sqlite](Bodoconsult.Database.Sqlite/Readme.md)
 
 [About us](#about-us)
 
