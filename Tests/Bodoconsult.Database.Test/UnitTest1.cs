@@ -25,7 +25,7 @@
 //            var erg = _db.TestConnection();
 
 
-//            Assert.IsTrue(erg);
+//            Assert.That(erg);
 //        }
 
 
@@ -38,7 +38,7 @@
 //            var erg = _db.GetDataTable(sql);
 
 
-//            Assert.IsTrue(erg.Rows.Count>0);
+//            Assert.That(erg.Rows.Count>0);
 //        }
 //    }
 //}

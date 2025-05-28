@@ -2,7 +2,8 @@
 
 using System;
 using Bodoconsult.Database.EntityBackup;
-using Bodoconsult.Database.Test.Helpers;
+using Bodoconsult.Database.Test.Utilities.Helpers;
+using Bodoconsult.Database.Test.Utilities.TestData;
 using NUnit.Framework;
 
 namespace Bodoconsult.Database.Test.EntityBackup
@@ -19,10 +20,10 @@ namespace Bodoconsult.Database.Test.EntityBackup
             var dataService = new DemoEntityEntityBackupDataService();
 
             // Act  
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup");
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup");
 
             // Assert
-            Assert.IsNotNull(backupService);
+            Assert.That(backupService, Is.Not.Null);
             Assert.That(backupService.PageSize, Is.Not.EqualTo(0));
             Assert.That(backupService.BackupType, Is.EqualTo(BackupTypeEnum.Daily));
         }
@@ -33,7 +34,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
                 {
                     BackupType = BackupTypeEnum.Daily
                 };
@@ -55,7 +56,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
             {
                 BackupType = BackupTypeEnum.Yearly
             };
@@ -77,7 +78,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
             {
                 BackupType = BackupTypeEnum.Monthly
             };
@@ -99,7 +100,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
             {
                 BackupType = BackupTypeEnum.Weekly
             };
@@ -120,7 +121,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
             {
                 BackupType = BackupTypeEnum.Daily
             };
@@ -142,7 +143,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
             {
                 BackupType = BackupTypeEnum.Yearly
             };
@@ -164,7 +165,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
             {
                 BackupType = BackupTypeEnum.Monthly
             };
@@ -188,7 +189,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             // Arrange 
             var dataService = new DemoEntityEntityBackupDataService();
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup")
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup")
             {
                 BackupType = BackupTypeEnum.Weekly
             };
@@ -215,7 +216,7 @@ namespace Bodoconsult.Database.Test.EntityBackup
             var dataService = new DemoEntityEntityBackupDataService();
             TestHelper.GetDataForService(dataService.DemoEntities, from, to);
 
-            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, TestHelper.TestFolder, "TestBackup");
+            var backupService = new CsvEntityBackupService<DemoEntity>(dataService, FileHelper.EntityBackupPath, "TestBackup");
 
             // Act  
             backupService.Backup(from, to);

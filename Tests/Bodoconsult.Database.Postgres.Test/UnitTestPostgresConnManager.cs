@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Bodoconsult EDV-Dienstleistungen GmbH. All rights reserved.
+
+using System.Collections.Generic;
 using System.Data.Common;
 using Bodoconsult.Database.Interfaces;
-using Bodoconsult.Database.Postgres.Test.Helpers;
+using Bodoconsult.Database.Test.Utilities.Helpers;
 using Npgsql;
 using NpgsqlTypes;
 using NUnit.Framework;
@@ -26,7 +28,7 @@ namespace Bodoconsult.Database.Postgres.Test
         [SetUp]
         public void Setup()
         {
-            var conn = TestHelper.PostgresConnectionString;
+            var conn = TestHelper.ConnectionString;
 
             _db = PostgresConnManager.GetConnManager(conn);
 
@@ -42,7 +44,7 @@ namespace Bodoconsult.Database.Postgres.Test
             var result = _db.GetDataTable(sql);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.That(result, Is.Not.Null);
 
         }
 
@@ -60,7 +62,7 @@ namespace Bodoconsult.Database.Postgres.Test
             var result = _db.GetDataTable(cmd);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.That(result, Is.Not.Null);
 
         }
 
@@ -80,7 +82,7 @@ namespace Bodoconsult.Database.Postgres.Test
             var erg = _db.GetDataTable(cmd);
 
 
-            Assert.IsTrue(erg.Rows.Count > 0);
+            Assert.That(erg.Rows.Count > 0);
         }
 
 
@@ -95,7 +97,7 @@ namespace Bodoconsult.Database.Postgres.Test
 
             var erg = _db.GetDataReader(sql);
 
-            Assert.IsTrue(erg.FieldCount > 0);
+            Assert.That(erg.FieldCount > 0);
         }
 
 
@@ -119,7 +121,7 @@ namespace Bodoconsult.Database.Postgres.Test
 
             var erg = _db.GetDataReader(cmd);
 
-            Assert.IsTrue(erg.FieldCount > 0);
+            Assert.That(erg.FieldCount > 0);
         }
 
 
@@ -137,7 +139,7 @@ namespace Bodoconsult.Database.Postgres.Test
             // Add parameters here if required
             var erg = _db.GetDataReader(cmd);
 
-            Assert.IsTrue(erg.FieldCount > 0);
+            Assert.That(erg.FieldCount > 0);
 
         }
 
@@ -159,8 +161,8 @@ namespace Bodoconsult.Database.Postgres.Test
             // Add parameters here if required
             var erg = _db.GetDataReader(cmd);
 
-            Assert.IsTrue(erg.FieldCount > 0);
-            Assert.IsTrue(erg.HasRows);
+            Assert.That(erg.FieldCount > 0);
+            Assert.That(erg.HasRows);
 
         }
 
@@ -211,8 +213,8 @@ namespace Bodoconsult.Database.Postgres.Test
 
             var result = _db.ExecWithResult(sql);
 
-            Assert.IsNotNull(result);
-            Assert.IsFalse(string.IsNullOrEmpty(result));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(string.IsNullOrEmpty(result), Is.False);
         }
 
 
@@ -237,8 +239,8 @@ namespace Bodoconsult.Database.Postgres.Test
 
             var result = _db.ExecWithResult(cmd);
 
-            Assert.IsNotNull(result);
-            Assert.IsFalse(string.IsNullOrEmpty(result));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(string.IsNullOrEmpty(result), Is.False);
         }
 
 
@@ -260,7 +262,7 @@ namespace Bodoconsult.Database.Postgres.Test
 
             var result = _db.ExecMultiple(commands);
 
-            Assert.IsTrue(result == 0);
+            Assert.That(result == 0);
         }
 
         
@@ -280,7 +282,7 @@ namespace Bodoconsult.Database.Postgres.Test
             var result = PostgresConnManager.MapGeneralDbTypeToNpgsqlDbType(inpuType);
 
             // Assert
-            Assert.AreEqual(expectedType, result);
+            Assert.That(result, Is.SameAs(expectedType));
         }
 
 
@@ -294,7 +296,7 @@ namespace Bodoconsult.Database.Postgres.Test
             var result = _db.TestConnection();
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.That(result);
 
         }
 

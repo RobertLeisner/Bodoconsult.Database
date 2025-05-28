@@ -1,5 +1,7 @@
-﻿using System.Linq;
-using Bodoconsult.Database.SqlClient.Test.Helpers;
+﻿// Copyright (c) Bodoconsult EDV-Dienstleistungen GmbH. All rights reserved.
+
+using System.Linq;
+using Bodoconsult.Database.Test.Utilities.Helpers;
 using Bodoconsult.Database.SqlClient.Test.MetaDataSample;
 using NUnit.Framework;
 
@@ -14,7 +16,7 @@ namespace Bodoconsult.Database.SqlClient.Test
         [SetUp]
         public void Setup()
         {
-            var conn = TestHelper.SqlServerConnectionString;
+            var conn = TestHelper.LocalDbConnectionString;
 
             _db = new CustomerService(conn);
 

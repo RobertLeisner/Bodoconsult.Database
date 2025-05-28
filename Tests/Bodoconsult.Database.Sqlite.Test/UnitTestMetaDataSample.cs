@@ -1,6 +1,9 @@
-﻿using System.Linq;
-using Bodoconsult.Database.Sqlite.Test.Helpers;
+﻿// Copyright (c) Bodoconsult EDV-Dienstleistungen GmbH. All rights reserved.
+
+
+using System.Linq;
 using Bodoconsult.Database.Sqlite.Test.MetaDataSample;
+using Bodoconsult.Database.Test.Utilities.Helpers;
 using NUnit.Framework;
 
 namespace Bodoconsult.Database.Sqlite.Test
@@ -14,7 +17,7 @@ namespace Bodoconsult.Database.Sqlite.Test
         [SetUp]
         public void Setup()
         {
-            var conn = TestHelper.SqliteConnectionString;
+            var conn = TestHelper.ConnectionString;
 
             _db = new CustomerService(conn);
 
@@ -28,8 +31,8 @@ namespace Bodoconsult.Database.Sqlite.Test
             var result = _db.GetAll();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Any());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Any());
 
         }
 
@@ -43,9 +46,9 @@ namespace Bodoconsult.Database.Sqlite.Test
             var result = _db.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.That(result, Is.Not.Null);
 
-            Assert.AreEqual(id, result.CustomerId);
+            Assert.That(result.CustomerId, Is.EqualTo(id));
         }
 
         [Test]
@@ -56,7 +59,7 @@ namespace Bodoconsult.Database.Sqlite.Test
             var result = _db.Count();
 
             // Assert
-            Assert.IsTrue(result > 0);
+            Assert.That(result > 0);
 
         }
 
@@ -79,8 +82,8 @@ namespace Bodoconsult.Database.Sqlite.Test
             // Assert
             var result = _db.GetById(id);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(newFax, result.Fax);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Fax, Is.EqualTo(newFax));
 
         }
 
@@ -99,8 +102,8 @@ namespace Bodoconsult.Database.Sqlite.Test
             // Assert
             var result = _db.GetById(id);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(customer.LastName, result.LastName);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.LastName, Is.EqualTo(customer.LastName) );
 
         }
 
@@ -113,7 +116,7 @@ namespace Bodoconsult.Database.Sqlite.Test
             _db.Delete(id);
 
             // Assert
-            Assert.IsTrue(true);
+            Assert.That(true);
 
         }
     }

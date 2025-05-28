@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bodoconsult.Database.EntityBackup;
 using Bodoconsult.Database.Interfaces;
+using Bodoconsult.Database.Test.Utilities.TestData;
 
 namespace Bodoconsult.Database.Test.EntityBackup;
 
@@ -18,7 +19,7 @@ public class DemoEntityEntityBackupDataService : BaseEntityBackupDataService<Dem
     /// <summary>
     /// Demo entities for testing
     /// </summary>
-    public List<DemoEntity> DemoEntities { get; } = new();
+    public List<DemoEntity> DemoEntities { get; } = [];
 
     /// <summary>
     /// Get the data for an entity by date

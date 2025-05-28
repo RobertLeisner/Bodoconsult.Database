@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8</TargetFramework>
+    <TargetFramework>net8-windows</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -17,18 +17,32 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Resources\Chinook_Sqlite.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.3.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Bodoconsult.Database.Sqlite\Bodoconsult.Database.Sqlite.csproj" />
-    <ProjectReference Include="..\..\Bodoconsult.Database\Bodoconsult.Database.csproj" />
+    <ProjectReference Include="..\..\src\Bodoconsult.Database.Sqlite\Bodoconsult.Database.Sqlite.csproj" />
+    <ProjectReference Include="..\..\src\Bodoconsult.Database\Bodoconsult.Database.csproj" />
+    <ProjectReference Include="..\Bodoconsult.Database.Test.Utilities\Bodoconsult.Database.Test.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

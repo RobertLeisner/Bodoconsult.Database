@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using Bodoconsult.Database.Interfaces;
-using Bodoconsult.Database.SqlClient.Test.Helpers;
+using Bodoconsult.Database.Test.Utilities.Helpers;
 using Microsoft.Data.SqlClient;
 using NUnit.Framework;
 
@@ -14,7 +14,7 @@ namespace Bodoconsult.Database.SqlClient.Test
     public class TestsSqlClientConnManager
     {
 
-        private readonly string _connectionString = TestHelper.SqlServerConnectionString;
+        private readonly string _connectionString = TestHelper.LocalDbConnectionString;
 
 
         private IConnManager _db;

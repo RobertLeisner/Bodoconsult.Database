@@ -3,30 +3,52 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CFFA22B5-2B9A-465D-9219-D93300FF3F4B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CFFA22B5-2B9A-465D-9219-D93300FF3F4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database", "Bodoconsult.Database\Bodoconsult.Database.csproj", "{1509BD33-550E-43AB-8400-A7E09C86460D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database", "src\Bodoconsult.Database\Bodoconsult.Database.csproj", "{1509BD33-550E-43AB-8400-A7E09C86460D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Postgres", "Bodoconsult.Database.Postgres\Bodoconsult.Database.Postgres.csproj", "{53102207-7372-4E91-AE26-9524D09633AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Postgres", "src\Bodoconsult.Database.Postgres\Bodoconsult.Database.Postgres.csproj", "{53102207-7372-4E91-AE26-9524D09633AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.SqlClient", "Bodoconsult.Database.SqlClient\Bodoconsult.Database.SqlClient.csproj", "{73AA2146-105F-4A8F-884F-44DF0F2E7C6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.SqlClient", "src\Bodoconsult.Database.SqlClient\Bodoconsult.Database.SqlClient.csproj", "{73AA2146-105F-4A8F-884F-44DF0F2E7C6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Sqlite", "Bodoconsult.Database.Sqlite\Bodoconsult.Database.Sqlite.csproj", "{1DAB9DE1-017D-47E0-9823-F79B63C77960}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Sqlite", "src\Bodoconsult.Database.Sqlite\Bodoconsult.Database.Sqlite.csproj", "{1DAB9DE1-017D-47E0-9823-F79B63C77960}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Postgres.Test", "Tests\Bodoconsult.Database.Postgres.Test\Bodoconsult.Database.Postgres.Test.csproj", "{FEB5255B-C5C0-4885-88C7-CCA56F981B3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Postgres.Test", "tests\Bodoconsult.Database.Postgres.Test\Bodoconsult.Database.Postgres.Test.csproj", "{FEB5255B-C5C0-4885-88C7-CCA56F981B3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.SqlClient.Test", "Tests\Bodoconsult.Database.SqlClient.Test\Bodoconsult.Database.SqlClient.Test.csproj", "{2E883188-AA71-47F2-8518-3AECED06964B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.SqlClient.Test", "tests\Bodoconsult.Database.SqlClient.Test\Bodoconsult.Database.SqlClient.Test.csproj", "{2E883188-AA71-47F2-8518-3AECED06964B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Sqlite.Test", "Tests\Bodoconsult.Database.Sqlite.Test\Bodoconsult.Database.Sqlite.Test.csproj", "{798E5A94-5E7D-4644-83DE-50B3A8DB9359}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Sqlite.Test", "tests\Bodoconsult.Database.Sqlite.Test\Bodoconsult.Database.Sqlite.Test.csproj", "{798E5A94-5E7D-4644-83DE-50B3A8DB9359}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Test", "Tests\Bodoconsult.Database.Test\Bodoconsult.Database.Test.csproj", "{05C7C1DB-CA3D-4434-8AC4-04A025E29587}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Test", "tests\Bodoconsult.Database.Test\Bodoconsult.Database.Test.csproj", "{05C7C1DB-CA3D-4434-8AC4-04A025E29587}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{0F999B42-D060-4CD4-8AA9-1F28837214B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseCleanupTool", "tools\DatabaseCleanupTool\DatabaseCleanupTool.csproj", "{1BE20907-14EE-636F-70E5-2088BFF59C54}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		nuget_publish.bat = nuget_publish.bat
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Ef", "src\Bodoconsult.Database.Ef\Bodoconsult.Database.Ef.csproj", "{034655DA-2972-4BE7-996A-DE39BE024779}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{56243B3F-561F-4394-8BB8-C2F55E92419A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EntityFramework", "EntityFramework", "{49B8E590-AAE1-40D4-9F24-6EA3B0E6917B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfConsoleApp1", "samples\EntityFramework\EfConsoleApp1\EfConsoleApp1.csproj", "{19172B2A-2EB3-6A83-5FC5-DD5DD2332EAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfConsoleApp1.Model", "samples\EntityFramework\EfConsoleApp1.Model\EfConsoleApp1.Model.csproj", "{30384F16-5762-4F42-BB35-A77CB91AE2C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Ef.SqlServer", "src\Bodoconsult.Database.Ef.SqlServer\Bodoconsult.Database.Ef.SqlServer.csproj", "{96418C32-552F-47ED-9CE8-E9A8F0DCBF87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Ef.Tests", "tests\Bodoconsult.Database.Ef.Tests\Bodoconsult.Database.Ef.Tests.csproj", "{027C05C1-C726-4A35-B663-CE64FFB018A4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D5F0E076-C7F0-4AAF-A016-9346978F2E8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{99309949-50A5-4AA2-96BF-0EBDF507790C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Test.Utilities", "tests\Bodoconsult.Database.Test.Utilities\Bodoconsult.Database.Test.Utilities.csproj", "{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,14 +88,57 @@ Global
 		{05C7C1DB-CA3D-4434-8AC4-04A025E29587}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05C7C1DB-CA3D-4434-8AC4-04A025E29587}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05C7C1DB-CA3D-4434-8AC4-04A025E29587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BE20907-14EE-636F-70E5-2088BFF59C54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BE20907-14EE-636F-70E5-2088BFF59C54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BE20907-14EE-636F-70E5-2088BFF59C54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BE20907-14EE-636F-70E5-2088BFF59C54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{034655DA-2972-4BE7-996A-DE39BE024779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{034655DA-2972-4BE7-996A-DE39BE024779}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{034655DA-2972-4BE7-996A-DE39BE024779}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{034655DA-2972-4BE7-996A-DE39BE024779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19172B2A-2EB3-6A83-5FC5-DD5DD2332EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19172B2A-2EB3-6A83-5FC5-DD5DD2332EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19172B2A-2EB3-6A83-5FC5-DD5DD2332EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19172B2A-2EB3-6A83-5FC5-DD5DD2332EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30384F16-5762-4F42-BB35-A77CB91AE2C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30384F16-5762-4F42-BB35-A77CB91AE2C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30384F16-5762-4F42-BB35-A77CB91AE2C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30384F16-5762-4F42-BB35-A77CB91AE2C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96418C32-552F-47ED-9CE8-E9A8F0DCBF87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96418C32-552F-47ED-9CE8-E9A8F0DCBF87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96418C32-552F-47ED-9CE8-E9A8F0DCBF87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96418C32-552F-47ED-9CE8-E9A8F0DCBF87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{027C05C1-C726-4A35-B663-CE64FFB018A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{027C05C1-C726-4A35-B663-CE64FFB018A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{027C05C1-C726-4A35-B663-CE64FFB018A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{027C05C1-C726-4A35-B663-CE64FFB018A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{1509BD33-550E-43AB-8400-A7E09C86460D} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
+		{53102207-7372-4E91-AE26-9524D09633AF} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
+		{73AA2146-105F-4A8F-884F-44DF0F2E7C6A} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
+		{1DAB9DE1-017D-47E0-9823-F79B63C77960} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
 		{FEB5255B-C5C0-4885-88C7-CCA56F981B3E} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
 		{2E883188-AA71-47F2-8518-3AECED06964B} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
 		{798E5A94-5E7D-4644-83DE-50B3A8DB9359} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
 		{05C7C1DB-CA3D-4434-8AC4-04A025E29587} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+		{1BE20907-14EE-636F-70E5-2088BFF59C54} = {99309949-50A5-4AA2-96BF-0EBDF507790C}
+		{034655DA-2972-4BE7-996A-DE39BE024779} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
+		{49B8E590-AAE1-40D4-9F24-6EA3B0E6917B} = {56243B3F-561F-4394-8BB8-C2F55E92419A}
+		{19172B2A-2EB3-6A83-5FC5-DD5DD2332EAC} = {49B8E590-AAE1-40D4-9F24-6EA3B0E6917B}
+		{30384F16-5762-4F42-BB35-A77CB91AE2C3} = {49B8E590-AAE1-40D4-9F24-6EA3B0E6917B}
+		{96418C32-552F-47ED-9CE8-E9A8F0DCBF87} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
+		{027C05C1-C726-4A35-B663-CE64FFB018A4} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95F397C9-3DE2-453B-BB17-C6B3EB3E2FBC}
 	EndGlobalSection
 EndGlobal

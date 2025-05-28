@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bodoconsult.App" Version="1.0.4" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bodoconsult.Database.Ef\Bodoconsult.Database.Ef.csproj" />
+  </ItemGroup>
+
+</Project>

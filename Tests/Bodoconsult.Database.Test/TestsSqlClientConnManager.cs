@@ -34,7 +34,7 @@
 //            var erg = _db.TestConnection();
 
 
-//            Assert.IsTrue(erg);
+//            Assert.That(erg);
 //        }
 
 
@@ -50,7 +50,7 @@
 //            var erg = _db.GetDataTable(sql);
 
 
-//            Assert.IsTrue(erg.Rows.Count>0);
+//            Assert.That(erg.Rows.Count>0);
 //        }
 
 
@@ -75,7 +75,7 @@
 //            var erg = _db.GetDataTable(cmd);
 
 
-//            Assert.IsTrue(erg.Rows.Count > 0);
+//            Assert.That(erg.Rows.Count > 0);
 //        }
 
 
@@ -94,7 +94,7 @@
 //            var erg = _db.GetDataTable(cmd);
 
 
-//            Assert.IsTrue(erg.Rows.Count > 0);
+//            Assert.That(erg.Rows.Count > 0);
 //        }
 
 
@@ -109,7 +109,7 @@
 
 //            var erg = _db.GetDataReader(sql);
 
-//            Assert.IsTrue(erg.FieldCount > 0);
+//            Assert.That(erg.FieldCount > 0);
 //        }
 
 
@@ -133,7 +133,7 @@
 
 //            var erg = _db.GetDataReader(cmd);
 
-//            Assert.IsTrue(erg.FieldCount > 0);
+//            Assert.That(erg.FieldCount > 0);
 //        }
 
 
@@ -151,7 +151,7 @@
 //            // Add parameters here if required
 //            var erg = _db.GetDataReader(cmd);
 
-//            Assert.IsTrue(erg.FieldCount>0);
+//            Assert.That(erg.FieldCount>0);
 
 //        }
 
@@ -173,8 +173,8 @@
 //            // Add parameters here if required
 //            var erg = _db.GetDataReader(cmd);
 
-//            Assert.IsTrue(erg.FieldCount > 0);
-//            Assert.IsTrue(erg.HasRows);
+//            Assert.That(erg.FieldCount > 0);
+//            Assert.That(erg.HasRows);
 
 //        }
 
@@ -225,7 +225,7 @@
 
 //            var result = _db.ExecWithResult(sql);
 
-//            Assert.IsNotNull(result);
+//            Assert.That(result);
 //            Assert.IsFalse(string.IsNullOrEmpty(result));
 //        }
 
@@ -251,7 +251,7 @@
 
 //            var result = _db.ExecWithResult(cmd);
 
-//            Assert.IsNotNull(result);
+//            Assert.That(result);
 //            Assert.IsFalse(string.IsNullOrEmpty(result));
 //        }
 
@@ -274,7 +274,7 @@
 
 //            var result = _db.ExecMultiple(commands);
 
-//            Assert.IsTrue(result == 0);
+//            Assert.That(result == 0);
 //        }
 
 

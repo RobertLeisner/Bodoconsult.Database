@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8</TargetFramework>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<Deterministic>False</Deterministic>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageOutputPath>..\..\nuget\</PackageOutputPath>
+		<Copyright>Bodoconsult EDV-Dienstleistungen GmbH</Copyright>
+		<Authors>Robert Leisner</Authors>
+		<Company>Bodoconsult EDV-Dienstleistungen GmbH</Company>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RepositoryType>git</RepositoryType>
+		<NeutralLanguage>en</NeutralLanguage>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<Version />
+		<RepositoryUrl>https://github.com/RobertLeisner/Bodoconsult.Database.Postgres</RepositoryUrl>
+		<PackageId>Bodoconsult.Database.Postgres</PackageId>
+		<PackageTags>System.Data PostgreSql Datatable SQL exec</PackageTags>
+		<Description>Simple .NET database layer for PostgreSQL based on System.Data intended for mainly read-only data access i.e. for reporting purposes</Description>
+		<PackageReleaseNotes>Migration to .Net 8 and new namespace</PackageReleaseNotes>
+		<PackageProjectUrl>https://github.com/RobertLeisner/Bodoconsult.Database.Postgres</PackageProjectUrl>
+
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="MetaData\BaseMetaDataService.cs" />
+		<Compile Remove="MetaData\IMetaDataService.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE.md" Link="LICENSE.md" />
+		<None Include="..\..\doc\Bodoconsult.Database.Postgres\README.md" Link="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Npgsql" Version="9.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Bodoconsult.Database\Bodoconsult.Database.csproj" />
+	</ItemGroup>
+
+</Project>

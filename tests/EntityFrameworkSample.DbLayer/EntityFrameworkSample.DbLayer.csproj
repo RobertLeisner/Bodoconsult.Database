@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Bodoconsult.Database.Ef\Bodoconsult.Database.Ef.csproj" />
+    <ProjectReference Include="..\..\Bodoconsult.Ef.SqlServer\Bodoconsult.Database.Ef.SqlServer.csproj" />
+  </ItemGroup>
+
+</Project>

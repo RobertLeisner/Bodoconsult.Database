@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>disable</Nullable>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="appsettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="log4net.config">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\logo.jpg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\LICENSE.md" Link="LICENSE.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Bodoconsult.App" Version="1.0.4" />
+	  <PackageReference Include="Bodoconsult.App.WinForms" Version="1.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\Bodoconsult.Database.SqlClient\Bodoconsult.Database.SqlClient.csproj" />
+	  <ProjectReference Include="..\..\src\Bodoconsult.Database\Bodoconsult.Database.csproj" />
+	</ItemGroup>
+
+</Project>

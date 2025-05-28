@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bodoconsult.App" Version="1.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Bodoconsult.Database.Ef.SqlServer\Bodoconsult.Database.Ef.SqlServer.csproj" />
+    <ProjectReference Include="..\..\..\src\Bodoconsult.Database.Ef\Bodoconsult.Database.Ef.csproj" />
+    <ProjectReference Include="..\EfConsoleApp1.Model\EfConsoleApp1.Model.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Bodoconsult.Database.EntityBackup.Formatters;
-using Bodoconsult.Database.Test.Helpers;
+using Bodoconsult.Database.Test.Utilities.Helpers;
+using Bodoconsult.Database.Test.Utilities.TestData;
 using NUnit.Framework;
 
 namespace Bodoconsult.Database.Test.EntityBackup.Formatters

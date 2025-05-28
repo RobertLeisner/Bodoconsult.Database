@@ -16,10 +16,10 @@ namespace Bodoconsult.Database.Test.MetaData
         /// <param name="entityName">Name of the entity class</param>
         /// <param name="sql">Current SQL statement to get meta data for</param>
         /// <param name="nameOfPrimaryKeyField">Name of the primary key field. Default: null</param>
-        public override void GetMetaData(string connectionString, string entityName, string sql, string nameOfPrimaryKeyField = null)
+        public override MetaDataTable GetMetaData(string connectionString, string entityName, string sql, string nameOfPrimaryKeyField = null)
         {
             DbCommand cmd = null;
-            GetMetaData(connectionString, entityName, cmd, nameOfPrimaryKeyField);
+            return GetMetaData(connectionString, entityName, cmd, nameOfPrimaryKeyField);
         }
 
         /// <summary>
@@ -29,9 +29,12 @@ namespace Bodoconsult.Database.Test.MetaData
         /// <param name="entityName">Name of the entity class</param>
         /// /// <param name="cmd">Current command to get meta data for</param>
         /// <param name="nameOfPrimaryKeyField">Name of the primary key field. Default: null</param>
-        public override void GetMetaData(string connectionString, string entityName, DbCommand cmd, string nameOfPrimaryKeyField =null)
+        public override MetaDataTable GetMetaData(string connectionString, string entityName, DbCommand cmd, string nameOfPrimaryKeyField =null)
         {
-            if (string.IsNullOrEmpty(nameOfPrimaryKeyField)) nameOfPrimaryKeyField = "CustomerId";
+            if (string.IsNullOrEmpty(nameOfPrimaryKeyField))
+            {
+                nameOfPrimaryKeyField = "CustomerId";
+            }
 
             var table = new MetaDataTable
             {
@@ -57,23 +60,24 @@ namespace Bodoconsult.Database.Test.MetaData
 
             table.Fields.Add(f);
 
-
-            Table = table;
+            return table;
         }
+
 
         /// <summary>
         /// Create as code for entity class
         /// </summary>
+        /// <param name="table">Current table meta data</param>
         /// <returns>string with the class code</returns>
-        public override string CreateEntityClass()
+        public override string CreateEntityClass(MetaDataTable table)
         {
             var result = new StringBuilder();
 
 
-            result.AppendLine($"public class {Table.DtoName}");
+            result.AppendLine($"public class {table.DtoName}");
             result.AppendLine("{");
 
-            foreach (var field in Table.Fields)
+            foreach (var field in table.Fields)
             {
                 result.AppendLine("");
                 result.AppendLine(GetFieldProperty(field));
@@ -91,23 +95,24 @@ namespace Bodoconsult.Database.Test.MetaData
         /// <summary>
         /// Creates a method for mapping from a <see cref="DataReader"/> to a corresponding entity class
         /// </summary>
+        /// <param name="table">Current table meta data</param>
         /// <returns>string with the method code</returns>
-        public override string CreateMappingFromDbToEntityForDataReader()
+        public override string CreateMappingFromDbToEntityForDataReader(MetaDataTable table)
         {
             var result = new StringBuilder();
 
-            result.AppendLine($"/// <summary>\r\n/// Mapping datareader to entity class {Table.DtoName}\r\n/// </summary>");
+            result.AppendLine($"/// <summary>\r\n/// Mapping datareader to entity class {table.DtoName}\r\n/// </summary>");
 
-            result.AppendLine($"public static {Table.DtoName} MapFromDbTo{Table.DtoName}(IDataReader reader)");
+            result.AppendLine($"public static {table.DtoName} MapFromDbTo{table.DtoName}(IDataReader reader)");
             result.AppendLine("{");
             result.AppendLine("");
 
-            result.AppendLine($"\tvar dto = new {Table.DtoName}();");
+            result.AppendLine($"\tvar dto = new {table.DtoName}();");
 
-            for (var index = 0; index < Table.Fields.Count; index++)
+            for (var index = 0; index < table.Fields.Count; index++)
             {
-                var field = Table.Fields[index];
-                result.AppendLine("\t" + GetFieldMappingFromDb(field, index));
+                var field = table.Fields[index];
+                result.AppendLine($"\t{GetFieldMappingFromDb(field, index)}");
             }
 
             result.AppendLine("");
@@ -116,8 +121,6 @@ namespace Bodoconsult.Database.Test.MetaData
 
             result.AppendLine("");
             result.AppendLine("}");
-
-
 
             return result.ToString();
         }
@@ -177,7 +180,7 @@ namespace Bodoconsult.Database.Test.MetaData
                     break;
             }
 
-            return result + ",\r\n";
+            return $"{result},\r\n";
         }
 
 
@@ -281,28 +284,27 @@ namespace Bodoconsult.Database.Test.MetaData
         }
 
 
-
-
         /// <summary>
         /// Creates a method do provide a new entity object filled with sample data
         /// </summary>
+        /// <param name="table">Current table meta data</param>
         /// <returns>string with the method code</returns>
-        public override string CreateNewEntity()
+        public override string CreateNewEntity(MetaDataTable table)
         {
             var result = new StringBuilder();
 
-            result.AppendLine($"/// <summary>\r\n/// Get a filled new object from DTO class {Table.DtoName} object\r\n/// </summary>");
+            result.AppendLine($"/// <summary>\r\n/// Get a filled new object from DTO class {table.DtoName} object\r\n/// </summary>");
 
-            result.AppendLine($"public static {Table.DtoName} New{Table.DtoName}()");
+            result.AppendLine($"public static {table.DtoName} New{table.DtoName}()");
             result.AppendLine("{");
             result.AppendLine("");
 
-            result.AppendLine($"\tvar item = new {Table.DtoName}{{");
+            result.AppendLine($"\tvar item = new {table.DtoName}{{");
 
             // Add parameters
-            foreach (var field in Table.Fields)
+            foreach (var field in table.Fields)
             {
-                result.Append("\t\t" + GetFieldValues(field));
+                result.Append($"\t\t{GetFieldValues(field)}");
             }
             result.AppendLine("\t};");
             result.AppendLine("");
@@ -315,26 +317,28 @@ namespace Bodoconsult.Database.Test.MetaData
             return result.ToString();
         }
 
+
         /// <summary>
         /// Creates a method to create a new row in the database from an entity object
         /// </summary>
+        /// <param name="table">Current table meta data</param>
         /// <returns>string with the method code</returns>
-        public override string CreateNewEntityCommand()
+        public override string CreateNewEntityCommand(MetaDataTable table)
         {
             var result = new StringBuilder();
 
-            result.AppendLine($"/// <summary>\r\n/// Insert a data row into table {Table.Name} from entity class {Table.DtoName} object\r\n/// </summary>");
+            result.AppendLine($"/// <summary>\r\n/// Insert a data row into table {table.Name} from entity class {table.DtoName} object\r\n/// </summary>");
 
-            result.AppendLine($"public void AddNew({Table.DtoName} item)");
+            result.AppendLine($"public void AddNew({table.DtoName} item)");
             result.AppendLine("{");
             result.AppendLine("");
 
             // Fieldlist
-            result.Append($"const string sql = \"INSERT INTO \\\"{Table.Name}\\\"(");
+            result.Append($"const string sql = \"INSERT INTO \\\"{table.Name}\\\"(");
 
             var fieldData = "";
 
-            foreach (var field in Table.Fields)
+            foreach (var field in table.Fields)
             {
                 fieldData += $"\\\"{field.Name}\\\", ";
             }
@@ -348,9 +352,9 @@ namespace Bodoconsult.Database.Test.MetaData
             // Parameter list
             fieldData = "";
 
-            foreach (var field in Table.Fields)
+            foreach (var field in table.Fields)
             {
-                fieldData += "@" + field.Name + ", ";
+                fieldData += $"@{field.Name}, ";
             }
 
             result.Append(fieldData[..^2]);
@@ -365,7 +369,7 @@ namespace Bodoconsult.Database.Test.MetaData
             result.AppendLine("");
 
             // Add parameters
-            foreach (var field in Table.Fields)
+            foreach (var field in table.Fields)
             {
                 result.Append(GetFieldParameter(field));
 
@@ -382,46 +386,43 @@ namespace Bodoconsult.Database.Test.MetaData
         /// <summary>
         /// Creates a method to update the database from an entity object
         /// </summary>
+        /// <param name="table">Current table meta data</param>
         /// <returns>string with the method code</returns>
-        public override string CreateUpdateEntityCommand()
+        public override string CreateUpdateEntityCommand(MetaDataTable table)
         {
             var result = new StringBuilder();
 
-            result.AppendLine($"/// <summary>\r\n/// Update a data row in table {Table.Name} from an entity class {Table.DtoName} object\r\n/// </summary>");
+            result.AppendLine($"/// <summary>\r\n/// Update a data row in table {table.Name} from an entity class {table.DtoName} object\r\n/// </summary>");
 
-            result.AppendLine($"public void Update({Table.DtoName} item)");
+            result.AppendLine($"public void Update({table.DtoName} item)");
             result.AppendLine("{");
             result.AppendLine("");
 
             // Fieldlist
-            result.Append($"const string sql = \"UPDATE \\\"{Table.Name}\\\" SET ");
+            result.Append($"const string sql = \"UPDATE \\\"{table.Name}\\\" SET ");
 
             var fieldData = "";
 
-            foreach (var field in Table.Fields)
+            foreach (var field in table.Fields)
             {
                 fieldData += $"\\\"{field.Name}\\\"=@{field.Name}, ";
             }
 
             result.Append(fieldData[..^2]);
 
-            var pk = Table.Fields.FirstOrDefault(x => x.IsPrimaryKey);
+            var pk = table.Fields.FirstOrDefault(x => x.IsPrimaryKey);
 
             if (pk != null)
             {
                 var where = $" WHERE \\\"{pk.Name}\\\"=@{pk.Name};";
-                result.Append(where + " \";\r\n");
+                result.Append($"{where} \";\r\n");
             }
             else
             {
                 result.Append(" \";\r\n");
             }
 
-
-
-
             //result.Append($"\t\t\"VALUES (");
-
 
             //// Parameter list
             //fieldData = "";
@@ -443,7 +444,7 @@ namespace Bodoconsult.Database.Test.MetaData
             result.AppendLine("");
 
             // Add parameters
-            foreach (var field in Table.Fields)
+            foreach (var field in table.Fields)
             {
                 result.Append(GetFieldParameter(field));
 
@@ -460,8 +461,9 @@ namespace Bodoconsult.Database.Test.MetaData
         /// <summary>
         /// Creates a method to delete an entity from the database by its ID
         /// </summary>
+        /// <param name="table">Current table meta data</param>
         /// <returns>string with the method code</returns>
-        public override string CreateDeleteEntityCommand()
+        public override string CreateDeleteEntityCommand(MetaDataTable table)
         {
             return "// Delete command not implemented";
         }
@@ -479,24 +481,25 @@ namespace Bodoconsult.Database.Test.MetaData
         /// <summary>
         /// Creates a method to get all entities from the database
         /// </summary>
+        /// <param name="table">Current table meta data</param>
         /// <returns>string with the method code</returns>
-        public override string CreateGetAllEntitiesCommand()
+        public override string CreateGetAllEntitiesCommand(MetaDataTable table)
         {
 
             var result = new StringBuilder();
 
-            result.AppendLine($"/// <summary>\r\n/// Get all rows in table {Table.Name}\r\n/// </summary>");
-            result.AppendLine($"public IList<{Table.DtoName}> GetAll()");
+            result.AppendLine($"/// <summary>\r\n/// Get all rows in table {table.Name}\r\n/// </summary>");
+            result.AppendLine($"public IList<{table.DtoName}> GetAll()");
             result.AppendLine("{");
 
             result.AppendLine("");
-            result.AppendLine($"var result = new List<{Table.DtoName}>();");
+            result.AppendLine($"var result = new List<{table.DtoName}>();");
             result.AppendLine("");
-            result.AppendLine($"var reader = _db.GetDataReader(\"SELECT * FROM \\\"{Table.Name}\\\"\"); ");
+            result.AppendLine($"var reader = _db.GetDataReader(\"SELECT * FROM \\\"{table.Name}\\\"\"); ");
             result.AppendLine("");
             result.AppendLine("while (reader.Read())");
             result.AppendLine("{");
-            result.AppendLine($"\tvar dto = DataHelper.MapFromDbTo{Table.DtoName}(reader);");
+            result.AppendLine($"\tvar dto = DataHelper.MapFromDbTo{table.DtoName}(reader);");
             result.AppendLine("\tresult.Add(dto);");
             result.AppendLine("");
             result.AppendLine("}");
@@ -507,7 +510,6 @@ namespace Bodoconsult.Database.Test.MetaData
 
             result.AppendLine("}");
 
-
             return result.ToString();
         }
 
@@ -515,47 +517,46 @@ namespace Bodoconsult.Database.Test.MetaData
         /// Creates a count method for the number of rows in a table
         /// </summary>
         /// <returns>string with the method code</returns>
-        public override string CreateCountCommand()
+        public override string CreateCountCommand(MetaDataTable table)
         {
             var result = new StringBuilder();
 
-            result.AppendLine($"/// <summary>\r\n/// Count all rows in table {Table.Name} \r\n/// </summary>");
+            result.AppendLine($"/// <summary>\r\n/// Count all rows in table {table.Name} \r\n/// </summary>");
             result.AppendLine($"public int Count()");
             result.AppendLine("{");
 
             result.AppendLine("");
-            result.AppendLine($"var result = _db.ExecWithResult(\"SELECT COUNT(*) FROM \\\"{Table.Name}\\\"\"); ");
+            result.AppendLine($"var result = _db.ExecWithResult(\"SELECT COUNT(*) FROM \\\"{table.Name}\\\"\"); ");
             result.AppendLine("");
             result.AppendLine("return Convert.ToInt32(result);");
 
             result.AppendLine("}");
 
-
             return result.ToString();
         }
 
-        public override string CreateGetByIdCommand()
+        public override string CreateGetByIdCommand(MetaDataTable table)
         {
             var result = new StringBuilder();
 
-            var pk = Table.Fields.FirstOrDefault(x => x.IsPrimaryKey);
+            var pk = table.Fields.FirstOrDefault(x => x.IsPrimaryKey);
             if (pk == null)
             {
                 result.AppendLine("// No primary key field defined for method GetById");
                 return result.ToString();
             }
-            result.AppendLine($"/// <summary>\r\n/// Get all rows in table {Table.Name}\r\n/// </summary>");
-            result.AppendLine($"public {Table.DtoName} GetById({pk.DatabaseType} pk{pk.Name})");
+            result.AppendLine($"/// <summary>\r\n/// Get all rows in table {table.Name}\r\n/// </summary>");
+            result.AppendLine($"public {table.DtoName} GetById({pk.DatabaseType} pk{pk.Name})");
             result.AppendLine("{");
 
             result.AppendLine("");
-            result.AppendLine($"{Table.DtoName} dto = null;");
+            result.AppendLine($"{table.DtoName} dto = null;");
             result.AppendLine("");
-            result.AppendLine($"var reader = _db.GetDataReader($\"SELECT * FROM \\\"{Table.Name}\\\" WHERE \\\"{pk.Name}\\\"={{pk{pk.Name}}};\"); ");
+            result.AppendLine($"var reader = _db.GetDataReader($\"SELECT * FROM \\\"{table.Name}\\\" WHERE \\\"{pk.Name}\\\"={{pk{pk.Name}}};\"); ");
             result.AppendLine("");
             result.AppendLine("while (reader.Read())");
             result.AppendLine("{");
-            result.AppendLine($"\tdto = DataHelper.MapFromDbTo{Table.DtoName}(reader);");
+            result.AppendLine($"\tdto = DataHelper.MapFromDbTo{table.DtoName}(reader);");
             result.AppendLine("\tbreak;");
             result.AppendLine("");
             result.AppendLine("}");
@@ -566,11 +567,7 @@ namespace Bodoconsult.Database.Test.MetaData
 
             result.AppendLine("}");
 
-
             return result.ToString();
         }
-
-
-
     }
 }
