@@ -19,7 +19,7 @@
 		<Version />
 		<RepositoryUrl>https://github.com/RobertLeisner/Bodoconsult.Database</RepositoryUrl>
 		<PackageId>Bodoconsult.Database.Ef</PackageId>
-		<PackageTags>Entity Framework Core, database, </PackageTags>
+		<PackageTags>Entity Framework Core, database, ORM</PackageTags>
 		<Description>Basic infrastructure to use Entity Framework in apps</Description>
 		<PackageReleaseNotes>Migration to .Net 8 and new namespace</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/RobertLeisner/Bodoconsult.Database</PackageProjectUrl>

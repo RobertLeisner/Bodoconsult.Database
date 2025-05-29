@@ -12,11 +12,11 @@ It handles the most common database actions like getting datatables, running SQL
 
 >   **[Bodoconsult.Database](doc/Bodoconsult.Database/README.md)**: base classes for data access
 
->   **[Bodoconsult.Database.SqlClient](doc/Bodoconsult.Database.SqlClient/README.md)**: implementation for MS SqlServer, MS SqlServer Express and LocalDb databases
+>   **[Bodoconsult.Database.SqlClient](doc/Bodoconsult.Database.SqlClient/README.md)**: implementations for MS SqlServer, MS SqlServer Express and LocalDb databases
 
 >   **[Bodoconsult.Database.Postgres](doc/Bodoconsult.Database.Postgres/README.md)**: implementations for PostgreSQL databases
 
->   **[Bodoconsult.Database.Sqlite](doc/Bodoconsult.Database.Sqlite/README.md)**: implementation for Sqlite databases
+>   **[Bodoconsult.Database.Sqlite](doc/Bodoconsult.Database.Sqlite/README.md)**: implementations for Sqlite databases
 
 ## About us
 
