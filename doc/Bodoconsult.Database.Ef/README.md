@@ -3,14 +3,13 @@ Bodoconsult.Database.Ef
 
 # What does the library
 
-Bodoconsult.Database.Ef is a library based on Microsoft Entity Framework. 
+Bodoconsult.Database.Ef is a library based on Microsoft Entity Framework Core (EFCore). EFCore is an object-relational-mapper (ORM) bringing the relational database model together with object ortiented programming languages.
 
 
 
 # How to use the library
 
 The source code contains NUnit test classes the following source code is extracted from. The samples below show the most helpful use cases for the library.
-
 
 
 >   [Entities](#entities)
@@ -35,19 +34,70 @@ The source code contains NUnit test classes the following source code is extract
 
 # Overview
 
-## Database layer seen from business or service layer
+Bodoconsult.Database.Ef is intended to work as a separation layer between EFCore database layer and database service layer. The main classes IUnitOfWork, DbContextScope, DbReadOnlyScope, IRepository and IRepositoryGuid hide the EFCore specific implementations behind a general abstraction implementable for other database technologies too. This makes using the database layer easier to use for people with limited skills in EFCore.
 
-To use the database layer you normally need the following classes:
+To abstract database layer may be a good idea especially if you have EFCore changing history in mind. MS restarted EF already multiple times with nearly always fully incompatible codebases causing a lot of migration work at their customers side. This is a reason some companies and developers are not eager to work with EFCore.
 
--   **IUnitOfWork**: The central class providing database access.
+Most examples you will find for EFCore are based on code-first access to EFCore. If you have to migrate legacy databases at customer side already working you will the database-first access to EFCore. These real world cases are generally much more complex then code-first but EFCore may add additional complexity.
 
--   **DbContextcope** and **DbReadOnlyScope**: This both classes represent the database connection and all its configuration required for EFCore. To access entities in the database you need to have a valid instance of one of those classes. Use IuniOfWork.GetContextScope() and IUnitOfWork.GetReadOnlyContextScope() to get this instances.
+## Points you should know before using EFCore
+
+To employ EFCore in a database project should be an explicit and well defined decision. If your project may gets more complex and is potentially holding more data in the database data this decision can be crucial for the success of the projects.
+
+Our experience as a rule of thumb is the more complex and the more data a database potentially contains the more crucial is performance and the more critical is the usage of EFCore. 
+
+There are alternatives for EFCore: You can use another ORM mapper like lightweight Dapper or you doing the mapping manually yorself based System.Data classes like DataTable and DataReader. The later might lead to the most performant code but is the most time consuming developing way.
+
+Advantages of EFCore are
+
+-   Entities are typesafe allowing better code quality.
+
+-   Loading entities is easier for the developer than to hard code it with basic System.Data classes like DataTable and DataReader.
+
+-   Use of LINQ and similar technologies simplifies code developement
+
+-   EFCore is usable with a lot of different database like SqlServer, Oracle, MySql, Sqlite etc.
+
+Disadvantages of EFCore are:
+
+-   Loading an entity with EFCore means basically loading all properties from the database only if there is needed only one property of the entity. There are workarounds that but they are time consuming to implement and therefore weakening the advantages of EFCore.
+
+-   EFCore SQL generation may created highly complex and bad performing SQL code from LINQ queries
+
+-   Performance drawbacks due to additional EFCore internal loading of entities from database especially in default untracked mode when saving updated data. Up to EFCore 3.1. the tracked mode was default. This means EFore tracks the changes made at a entity internally until entity is saved to database again. This default setting didn't help in many real life scenarios where the data are given i.e. to a GUI client via a non-EFCore technology like GRPC and given back to EFCore later in an updated state same way. Nowadays loading entities is done by EFCore is done in untracked mode by default.
+
+-   EFCore is an additonal layer requiring a lot of ressources compared to plain SQL. This might be an issue for bigger data management processes like data migrations. In such cases you have to weight typesafety and unit testability against performance.
+
+## Recommened layers for database access in an app
+
+In the following documentation we use the following (uncomplete) layer model of an app:
+
+-   **Business logic layer**: Implements business logic but no database details. The database is access only via Database service layer.
+
+-   **Database service layer**: Implements database access logic based on System.Data, EFCore, Dapper etc.
+
+-   **Database layer**: This layer is not urgently needed but simplifies the access to EFCore in Bodoconsult.Database.Ef. It provides general functionality frequently used generally like basic connection handling or entity related actions like adding, updating, deleting and selecting entities in an generic manner. Its usage simplifies the database service layer code.
+
+-   **Model layer**: Defines the entities (tables) used in the database.
+
+
+## Database layer seen from database service layer
+
+The business logic layer should not access the database layer directly. A direct access to database layer weakens replaceablility and testability of the business logic layer.
+
+To use the database layer from database service layer you normally need the following classes:
+
+-   **IUnitOfWork**: The central class providing database service access.
+
+-   **DbContextScope** and **DbReadOnlyScope**: This both classes represent the database connection and all its configuration required for EFCore. To access entities in the database you need to have a valid instance of one of those classes. Use IuniOfWork.GetContextScope() and IUnitOfWork.GetReadOnlyContextScope() to get this instances.
 
 -   **IRepository** and **IRepositoryGuid**: Use both interfaces for accessing data from entity tables, update data in the tables etc. Use IUnitOfWork.GetRepository<TEntity> and IUnitOfWork.GetRepositoryGuid<TEntity> to access data from a certain entity type TEntity.
 
+The following code shows the basic idea of getting data from a table readonly:
+
 ``` csharp
 // Read data from database
-using (uow.GetReadOnlyContextScope())
+using (uow.GetReadOnlyContextScope())   // Opening connection and closing it on Dispose() of uow
 {
     var repo = uow.GetRepository<Users>();
     var result = repo.Any(x => x.UserTypeId > 0);
@@ -55,28 +105,34 @@ using (uow.GetReadOnlyContextScope())
 }
 ```
 
+The following code shows the basic idea of adding a row to a table. Updating, deleting and selecting entites data are done similar.
+
+
 ``` csharp
 // Write data to database
-using (uow.GetReadOnlyContextScope())
+using (uow.GetReadOnlyContextScope())   // Opening connection and closing it on Dispose() of uow
 {
     var repo = uow.GetRepository<Users>();
     
     var newEntity = new Users():
     newEntity.Name = "Blubb";
 
-    repo.Add(newEntity);
+    repo.Add(newEntity);    
 
     scope.SaveChanges();
 }
 ```
 
+The following chart shows the intended (uncomplete) database related layering of an app using Bodoconsult.Database.Ef:
+
 ![Database layer](DbLayer.png)
 
 ## Process of setting up the database context
 
+The unit of work should be loaded as a singleton instance on app start. During instanciation the DbContext is created, the necessary migrations are executed and if needed existing data are migrated or a fresh database is seeded.
+
 ![Unit of work](UnitOfWork.png)
 
-The unit of work should be loaded as a singleton instance. During instanciation the DbContext is created, the necessary migrations are executed and if needed existing data are migrated or a fresh database is seeded.
 
 # Entities 
 
@@ -510,9 +566,6 @@ public class SqlServerExampleDbUnitOfWork: SqlServerUnitOfWork<SqlServerExampleD
 # Choose or implement a migration controller: IMigrationController
 
 SqlServerMigrationController is a default migration controller for SqlServer based databases. It takes a backup of existing databases, runs the EFCore schema migrations and after that the data migration defined in your IModelDataConvertersHandlerFactory implementation.
-
-
-
 
 # Handling evolving database schemas: Migrations
 
