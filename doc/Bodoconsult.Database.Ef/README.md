@@ -11,6 +11,7 @@ Bodoconsult.Database.Ef is a library based on Microsoft Entity Framework Core (E
 
 The source code contains NUnit test classes the following source code is extracted from. The samples below show the most helpful use cases for the library.
 
+>   [Overview](#overview)
 
 >   [Entities](#entities)
 
@@ -24,13 +25,25 @@ The source code contains NUnit test classes the following source code is extract
 
 >   [Create a unit of work based on SqlServerUnitOfWork](#create-a-unit-of-work-based-on-sqlserverunitofwork)
 
->   [Handling evolving database schemas: Migrations](#migrations)
+>   [Handling evolving database schemas: Migrations](#handling-evolving-database-schemas-migrations)
 
->   [Running schema and data migrations: IMigrationController](#running-schema-and-data-migrations-imigrationcontroller)
+> > [Overview migrations](#overview-migrations)
 
->   [Running all data migrations: IModelDataConvertersHandler](#running-all-data-migrations-imodeldataconvertershandler)
+> > [Entity Framework Core tools (EFCore tools)](#entity-framework-core-tools-efcore-tools)
 
->   [Running a data migration for one entity type: IModelDataConverter](#running-a-data-migration-for-one-entity-type-imodeldataconverter)
+> > [Existing databases](#existing-databases)
+
+> > [Example for EfCore migrations followed by a data migration](#example-for-efcore-migrations-followed-by-a-data-migration)
+
+> > [Create model data converters: BaseModelDataConverter](#create-model-data-converters-basemodeldataconverter)
+
+> > [Create a model data conversion handler factory: IModelDataConvertersHandlerFactory](#create-a-model-data-conversion-handler-factory-imodeldataconvertershandlerfactory)
+
+> > [Running schema and data migrations: IMigrationController](#running-schema-and-data-migrations-imigrationcontroller)
+
+> > []()
+
+> > []()
 
 # Overview
 
@@ -105,7 +118,7 @@ using (uow.GetReadOnlyContextScope())   // Opening connection and closing it on 
 }
 ```
 
-The following code shows the basic idea of adding a row to a table. Updating, deleting and selecting entites data are done similar.
+The following code shows the basic idea of adding a row to a table. Updating, deleting and selecting entities data are done similar.
 
 
 ``` csharp
@@ -563,10 +576,6 @@ public class SqlServerExampleDbUnitOfWork: SqlServerUnitOfWork<SqlServerExampleD
 
 ```
 
-# Choose or implement a migration controller: IMigrationController
-
-SqlServerMigrationController is a default migration controller for SqlServer based databases. It takes a backup of existing databases, runs the EFCore schema migrations and after that the data migration defined in your IModelDataConvertersHandlerFactory implementation.
-
 # Handling evolving database schemas: Migrations
 
 If talking about EFCore we should differ to kinds of migrations:
@@ -575,7 +584,7 @@ If talking about EFCore we should differ to kinds of migrations:
 
 -   Data migrations (converters): seed a new database or convert existing data to the new database schema version,
 
-## Overview
+## Overview migrations
 
 Migrations define how to reach the defined database (DB) schema in the DbContext instance with database tools. A migration is bound to a certain database schema version. 
 
@@ -621,7 +630,7 @@ In such a case you have first to update the existing database schema to the new 
 
 The experience has shown in bigger DB project based on EFCore 3.1 with three main database schemas that including data migration into EFCore migrations is not a good idea. Debugging is complicated and implementation difficult to make it unit testable. So the better idea is to perform the migrations as intended by MS and after that run data migrations separately. In the following you will see how we solved the task bringing databases from schema version 1 to target schema version 3. Version 1 was weakly normalized. So compared to the target schema version 3 there were a lot of tables and fields missing. On the other side some fields from schema version 1 could be removed after normalization. Some old tables were replaced by new tables too. So version 2 is an intermediate state adding the new tables and fields as required. Version 3 then cleans the database schema to the finally required state by removing unused tables and unused fields.
 
-The first approach was to that all in one solution. Theoretically this should be possible. In reality you need to define three sets of entities, entity configs and DBContexts for each of the schema version. This makes configuration for example of the entites more demanding as entity XYZ_V1 should be mapped to table XYZ and XYZ_V2 and XYZ_V3 too. Yes, you can do that. We failed with this approach due to the huge complexity of this approach.
+The first approach was to that all in one solution. Theoretically this should be possible. In reality you need to define three sets of entities, entity configs and DBContexts for each of the schema version. This makes configuration for example of the entities more demanding as entity XYZ_V1 should be mapped to table XYZ and XYZ_V2 and XYZ_V3 too. Yes, you can do that. We failed with this approach due to the huge complexity of this approach.
 
 Spending a lot of time with experiments we decided to handle each schema version in a separate solution with a separate busienss logic, data model and UI. This kept at least the complexity added by using EFCore at an acceptable level. In each solution you have the model related to the current schema version included. The migrations from version 1 were then taken to version 2 and a new migration added to reach version 2. In version 3 project the model was as required in version 3 and the migrations from version 2 were added completely and a new migration was added to reach version 3.
 
@@ -836,39 +845,11 @@ public class SqlServerExampleDbEfModelDataConvertersHandlerFactory: IModelDataCo
 }
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Running schema and data migrations: IMigrationController
 
 Running the migrations and migrate the data afterwards will be handled by an implementation of IMigrationController. For SqlServer there is a default implementation SqlServerMigrationController. This default implementation takes a backup of an existing database, then migrates to the new database schema and runs data migrations afterwards.
 
-## 
-
-
-
-## Running all data migrations: IModelDataConvertersHandler
-
-
-
-## Running a data migration for one entity type: IModelDataConverter
-
-
+The data migrations are handled in an IModelDataConvertersHandler implementation. This implementation needs all converters for existing data based on IModelDataConverter to be loaded in your IModelDataConvertersHandlerFactory implementation before injected via ctor into IUnitOfWork implementation. 
 
 # About us
 

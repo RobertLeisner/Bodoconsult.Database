@@ -4,58 +4,57 @@ using Bodoconsult.App.Interfaces;
 using Bodoconsult.Database.Ef.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EfConsoleApp1.Model.DatabaseModel.DbContext
+namespace EfConsoleApp1.Model.DatabaseModel.DbContext;
+
+/// <summary>
+/// Factory for <see cref="SqlServerExampleDbContext"/> instances
+/// </summary>
+public class SqlServerExampleDbContextFactory: IDbContextWithConfigFactory<SqlServerExampleDbContext>
 {
     /// <summary>
-    /// Factory for <see cref="SqlServerExampleDbContext"/> instances
+    /// Current DB context configuration
     /// </summary>
-    public class SqlServerExampleDbContextFactory: IDbContextWithConfigFactory<SqlServerExampleDbContext>
+
+    /// <summary>
+    /// Current app logger instance
+    /// </summary>
+    public IAppLoggerProxy Logger { get; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public SqlServerExampleDbContextFactory(IAppGlobalsWithDatabase appGlobals, IAppLoggerProxy logger)
     {
-        /// <summary>
-        /// Current DB context configuration
-        /// </summary>
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        AppGlobals = appGlobals ?? throw new ArgumentNullException(nameof(appGlobals));
+    }
 
-        /// <summary>
-        /// Current app logger instance
-        /// </summary>
-        public IAppLoggerProxy Logger { get; }
+    /// <summary>
+    /// Current app globals with database settings
+    /// </summary>
+    public IAppGlobalsWithDatabase AppGlobals { get; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public SqlServerExampleDbContextFactory(IAppGlobalsWithDatabase appGlobals, IAppLoggerProxy logger)
+
+    public SqlServerExampleDbContext CreateDbContext()
+    {
+        if (string.IsNullOrEmpty(AppGlobals.ContextConfig.ConnectionString))
         {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-           AppGlobals = appGlobals ?? throw new ArgumentNullException(nameof(appGlobals));
+            throw new ArgumentNullException(nameof(AppGlobals.ContextConfig.ConnectionString));
         }
 
-        /// <summary>
-        /// Current app globals with database settings
-        /// </summary>
-        public IAppGlobalsWithDatabase AppGlobals { get; }
+        var builder = new DbContextOptionsBuilder<SqlServerExampleDbContext>();
 
+        builder
+            .UseLoggerFactory(Logger.LoggerFactory)
+            .UseSqlServer(AppGlobals.ContextConfig.ConnectionString, x => x
+                .MigrationsAssembly("EfConsoleApp1.Model")
+                .EnableRetryOnFailure()
+                .CommandTimeout((int)TimeSpan.FromSeconds(AppGlobals.ContextConfig.CommandTimeout).TotalSeconds));
 
-        public SqlServerExampleDbContext CreateDbContext()
-        {
-            if (string.IsNullOrEmpty(AppGlobals.ContextConfig.ConnectionString))
-            {
-                throw new ArgumentNullException(nameof(AppGlobals.ContextConfig.ConnectionString));
-            }
+        var dbContext = new SqlServerExampleDbContext(builder.Options);
+        dbContext.Database.SetCommandTimeout(AppGlobals.ContextConfig.CommandTimeout);
+        dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
 
-            var builder = new DbContextOptionsBuilder<SqlServerExampleDbContext>();
-
-            builder
-                .UseLoggerFactory(Logger.LoggerFactory)
-                .UseSqlServer(AppGlobals.ContextConfig.ConnectionString, x => x
-                    .MigrationsAssembly("EfConsoleApp1.Model")
-                    .EnableRetryOnFailure()
-                    .CommandTimeout((int)TimeSpan.FromSeconds(AppGlobals.ContextConfig.CommandTimeout).TotalSeconds));
-
-            var dbContext = new SqlServerExampleDbContext(builder.Options);
-            dbContext.Database.SetCommandTimeout(AppGlobals.ContextConfig.CommandTimeout);
-            dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
-
-            return dbContext;
-        }
+        return dbContext;
     }
 }

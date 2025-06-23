@@ -3,32 +3,30 @@
 using Bodoconsult.Database.Ef.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
-namespace EfConsoleApp1.Model.DatabaseModel.Entities
+namespace EfConsoleApp1.Model.DatabaseModel.Entities;
+
+/// <summary>
+/// UserType: Represents an app user type like admin, normal user etc.
+/// </summary>
+public class UserType : IEntityRequirements
 {
 
     /// <summary>
-    /// UserType: Represents an app user type like admin, normal user etc.
+    /// Internal ID of the user
     /// </summary>
-    public class UserType : IEntityRequirements
-    {
+    public int ID { get; set; }
 
-        /// <summary>
-        /// Internal ID of the user
-        /// </summary>
-        public int ID { get; set; }
+    /// <summary>
+    /// Row version to solve concurrency issues
+    /// </summary>
+    [Timestamp]
+    public byte[] RowVersion { get; set; }
 
-        /// <summary>
-        /// Row version to solve concurrency issues
-        /// </summary>
-        [Timestamp]
-        public byte[] RowVersion { get; set; }
+    /// <summary>
+    /// Username of the person
+    /// </summary>
+    [Required(AllowEmptyStrings = false)]
+    [StringLength(30)]
+    public string UserTypeName { get; set; }
 
-        /// <summary>
-        /// Username of the person
-        /// </summary>
-        [Required(AllowEmptyStrings = false)]
-        [StringLength(30)]
-        public string UserTypeName { get; set; }
-
-    }
 }

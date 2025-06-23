@@ -3,22 +3,21 @@
 using Bodoconsult.App.DependencyInjection;
 using Bodoconsult.App.Interfaces;
 
-namespace EfConsoleApp1.Model.DiContainerProvider
+namespace EfConsoleApp1.Model.DiContainerProvider;
+
+/// <summary>
+/// Load all database layer services to DI container. Intended mainly for testing DB layer not for production
+/// </summary>
+public class SqlServerExampleDbDiContainerServiceProviderPackage : BaseDiContainerServiceProviderPackage
 {
+
     /// <summary>
-    /// Load all database layer services to DI container. Intended mainly for testing DB layer not for production
+    /// Default ctor
     /// </summary>
-    public class SqlServerExampleDbDiContainerServiceProviderPackage : BaseDiContainerServiceProviderPackage
+    public SqlServerExampleDbDiContainerServiceProviderPackage(IAppGlobals appGlobals): base(appGlobals)
     {
-
-        /// <summary>
-        /// Default ctor
-        /// </summary>
-        public SqlServerExampleDbDiContainerServiceProviderPackage(IAppGlobals appGlobals): base(appGlobals)
-        {
-            var provider = new SqlServerExampleDbDiContainerProvider(((IAppGlobalsWithDatabase)AppGlobals).ContextConfig);
-            ServiceProviders.Add(provider);
-        }
-
+        var provider = new SqlServerExampleDbDiContainerProvider(((IAppGlobalsWithDatabase)AppGlobals).ContextConfig);
+        ServiceProviders.Add(provider);
     }
+
 }
