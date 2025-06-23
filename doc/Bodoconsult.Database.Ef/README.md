@@ -11,7 +11,7 @@ Bodoconsult.Database.Ef is a library based on Microsoft Entity Framework.
 
 The source code contains NUnit test classes the following source code is extracted from. The samples below show the most helpful use cases for the library.
 
-# Overview
+
 
 >   [Entities](#entities)
 
@@ -33,17 +33,59 @@ The source code contains NUnit test classes the following source code is extract
 
 >   [Running a data migration for one entity type: IModelDataConverter](#running-a-data-migration-for-one-entity-type-imodeldataconverter)
 
+# Overview
+
+## Database layer seen from business or service layer
+
+To use the database layer you normally need the following classes:
+
+-   **IUnitOfWork**: The central class providing database access.
+
+-   **DbContextcope** and **DbReadOnlyScope**: This both classes represent the database connection and all its configuration required for EFCore. To access entities in the database you need to have a valid instance of one of those classes. Use IuniOfWork.GetContextScope() and IUnitOfWork.GetReadOnlyContextScope() to get this instances.
+
+-   **IRepository** and **IRepositoryGuid**: Use both interfaces for accessing data from entity tables, update data in the tables etc. Use IUnitOfWork.GetRepository<TEntity> and IUnitOfWork.GetRepositoryGuid<TEntity> to access data from a certain entity type TEntity.
+
+``` csharp
+// Read data from database
+using (uow.GetReadOnlyContextScope())
+{
+    var repo = uow.GetRepository<Users>();
+    var result = repo.Any(x => x.UserTypeId > 0);
+    Assert.That(result, Is.True);
+}
+```
+
+``` csharp
+// Write data to database
+using (uow.GetReadOnlyContextScope())
+{
+    var repo = uow.GetRepository<Users>();
+    
+    var newEntity = new Users():
+    newEntity.Name = "Blubb";
+
+    repo.Add(newEntity);
+
+    scope.SaveChanges();
+}
+```
+
+![Database layer](DbLayer.png)
+
+## Process of setting up the database context
+
+![Unit of work](UnitOfWork.png)
+
+The unit of work should be loaded as a singleton instance. During instanciation the DbContext is created, the necessary migrations are executed and if needed existing data are migrated or a fresh database is seeded.
 
 # Entities 
 
-If talking about Entity Framework an entity is a simple class representing a table in the database. Sometimes entities are named plain old code objects (POCO) too.
+If talking about Entity Framework an entity is a simple class representing a table in the database. Sometimes entities are named *plain old code objects* (POCO) too.
 
 ``` csharp
-
 /// <summary>
 /// Represents an app setting item
 /// </summary>
-
 public class AppSettings : IEntityRequirements
 {
     public int ID { get; set; }
@@ -64,9 +106,7 @@ public class AppSettings : IEntityRequirements
     /// Current value of the app setting
     /// </summary>
     public string Value { get; set; }
-
 }
-
 ```
 
 Do not use prefixes for entities. It is not recommend by MS anymore. In the above example name the class AppSettings instead of TAppSettings
@@ -75,7 +115,6 @@ Entities used with Entity Framework should contain simple get-set properties onl
 If you want to enhance an entity with logic used extension methods for implementing the logic:
 
 ``` csharp
-
 /// <summary>
 /// Extension method for <see cref="AppSettings"/> entity
 /// </summary>
@@ -88,12 +127,9 @@ public static class AppSettingsExtensions
     /// <returns>Entity data as a friendly readable string</returns>
     public static string ToFormattedString(this AppSettings appSettings)
     {
-
         return $"{appSettings.Key}: {appSettings.RowVersion}";
-
     }
 }
-
 ```
 
 If logic is implemented in the entity class itself, the logic is loaded to memory per instance created of the entity type. The extension method is loaded only once. Espacially for heavy-usage entities is may reduce the memory pressure of your app.
@@ -105,7 +141,6 @@ Entity configuration for entity properties may be done in the entity class itsel
 More and more complex configuration can be done in a separate configuration file implementing IEntityTypeConfiguration\<T\>. Use this file to configure table details, database indexes and other more sophisticated settings.
 
 ``` csharp
-
 /// <summary>
 /// Entity configuration for <see cref="AppSettings"/> entity
 /// </summary>
@@ -136,7 +171,6 @@ public class AppSettingsConfig : IEntityTypeConfiguration<AppSettings>
             .IsUnique();
     }
 }
-
 ```
 
 # Database context
@@ -144,107 +178,105 @@ public class AppSettingsConfig : IEntityTypeConfiguration<AppSettings>
 Implement a base DbContext based class:
 
 ``` csharp
+public class ExampleDbContext : Microsoft.EntityFrameworkCore.DbContext
+{
 
-    public class ExampleDbContext : Microsoft.EntityFrameworkCore.DbContext
+    /// <summary>
+    /// Default ctor
+    /// </summary>
+    public ExampleDbContext() : base(GetDefaultOptions())
+    { }
+
+    /// <summary>
+    /// Ctor for setting up DbContext with a specific connection string
+    /// </summary>
+    /// <param name="connectionString">Connection string</param>
+    public ExampleDbContext(string connectionString) : base(GetDefaultOptions(connectionString))
+    { }
+
+    /// <summary>
+    /// Ctor for setting up DbContext with non SqLserver database i.e. for in-memory testing
+    /// </summary>
+    /// <param name="options">DbContext options</param>
+    public ExampleDbContext(DbContextOptions options)
+        : base(options)
+    { }
+
+
+    /// <summary>
+    /// Get default options for the DbContext
+    /// </summary>
+    /// <param name="connectionString">Connection string to use</param>
+    /// <returns>DbContext options</returns>
+    protected static DbContextOptions GetDefaultOptions(string connectionString = null)
     {
-
-        /// <summary>
-        /// Default ctor
-        /// </summary>
-        public ExampleDbContext() : base(GetDefaultOptions())
-        { }
-
-        /// <summary>
-        /// Ctor for setting up DbContext with a specific connection string
-        /// </summary>
-        /// <param name="connectionString">Connection string</param>
-        public ExampleDbContext(string connectionString) : base(GetDefaultOptions(connectionString))
-        { }
-
-        /// <summary>
-        /// Ctor for setting up DbContext with non SqLserver database i.e. for in-memory testing
-        /// </summary>
-        /// <param name="options">DbContext options</param>
-        public ExampleDbContext(DbContextOptions options)
-            : base(options)
-        { }
-
-
-        /// <summary>
-        /// Get default options for the DbContext
-        /// </summary>
-        /// <param name="connectionString">Connection string to use</param>
-        /// <returns>DbContext options</returns>
-        protected static DbContextOptions GetDefaultOptions(string connectionString = null)
+        if (string.IsNullOrEmpty(connectionString))
         {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            var builder = new DbContextOptionsBuilder<ExampleDbContext>();
-
-            builder.UseSqlServer(connectionString, x => x
-                .MigrationsAssembly("EntityFrameworkSample")
-                .EnableRetryOnFailure()
-                .CommandTimeout((int)TimeSpan.FromSeconds(600).TotalSeconds));
-            return builder.Options;
+            throw new ArgumentNullException(nameof(connectionString));
         }
 
-        #region Database sets
+        var builder = new DbContextOptionsBuilder<ExampleDbContext>();
 
-        public DbSet<AppSettings> AppSettings { get; set; }
-
-        public DbSet<Users> Users { get; set; }
-
-
-        #endregion
-
-        #region Query sets
-
-        ///// <summary>
-        ///// Items for the component tree in the UI (material handling view)
-        ///// </summary>
-        //public DbQuery<QComponentTreeItem> QComponentTreeItems { get; set; }
-
-        #endregion
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            if (modelBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(modelBuilder));
-            }
-
-            LoadConfig(modelBuilder);
-        }
-
-
-        private static readonly IEntityTypeConfiguration<AppSettings> AppSettingsConfig = new AppSettingsConfig();
-        private static readonly IEntityTypeConfiguration<Users> UsersConfig = new UsersConfig();
-
-        private static void LoadConfig(ModelBuilder modelBuilder)
-        {
-            // Config model
-            modelBuilder.ApplyConfiguration(AppSettingsConfig);
-            modelBuilder.ApplyConfiguration(UsersConfig);
-
-
-            //**********************
-            // Add relations
-            //
-            // Build only one-to-many relationships for being compatible with EFCore 2.2
-            //**********************
-
-            //// TArticle
-            //modelBuilder.Entity<TArticle>()
-            //    .HasOne(x => x.ArticleGroup)
-            //    .WithMany(x => x.Articles)
-            //    .HasForeignKey(s => s.ArticleGroupId);
-
-        }
+        builder.UseSqlServer(connectionString, x => x
+            .MigrationsAssembly("EntityFrameworkSample")
+            .EnableRetryOnFailure()
+            .CommandTimeout((int)TimeSpan.FromSeconds(600).TotalSeconds));
+        return builder.Options;
     }
 
+    #region Database sets
+
+    public DbSet<AppSettings> AppSettings { get; set; }
+
+    public DbSet<Users> Users { get; set; }
+
+
+    #endregion
+
+    #region Query sets
+
+    ///// <summary>
+    ///// Items for the component tree in the UI (material handling view)
+    ///// </summary>
+    //public DbQuery<QComponentTreeItem> QComponentTreeItems { get; set; }
+
+    #endregion
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        if (modelBuilder == null)
+        {
+            throw new ArgumentNullException(nameof(modelBuilder));
+        }
+
+        LoadConfig(modelBuilder);
+    }
+
+
+    private static readonly IEntityTypeConfiguration<AppSettings> AppSettingsConfig = new AppSettingsConfig();
+    private static readonly IEntityTypeConfiguration<Users> UsersConfig = new UsersConfig();
+
+    private static void LoadConfig(ModelBuilder modelBuilder)
+    {
+        // Config model
+        modelBuilder.ApplyConfiguration(AppSettingsConfig);
+        modelBuilder.ApplyConfiguration(UsersConfig);
+
+
+        //**********************
+        // Add relations
+        //
+        // Build only one-to-many relationships for being compatible with EFCore 2.2
+        //**********************
+
+        //// TArticle
+        //modelBuilder.Entity<TArticle>()
+        //    .HasOne(x => x.ArticleGroup)
+        //    .WithMany(x => x.Articles)
+        //    .HasForeignKey(s => s.ArticleGroupId);
+
+    }
+}
 ```
 
 # Enhance database context for target database type
@@ -252,7 +284,6 @@ Implement a base DbContext based class:
 In case your DBContext instance requires implementations specific for a certain type of database, implement a class derived from your base DbContextclass and add or adjust the required features.
 
 ``` csharp
-
 /// <summary>
 /// Implement SQLServer specific features for the DbContext
 /// </summary>
@@ -281,7 +312,6 @@ public class SqlServerExampleDbContext : ExampleDbContext
     // Add or adjust DB specific logic
 
 }
-
 ```
 
 # Create a design time DbContext factory: IDesignTimeDbContextFactory<SqlServerExampleDbContext>
@@ -460,17 +490,16 @@ public class SqlServerExampleDbHighPerformanceContextFactory : IDbContextWithCon
 # Create a unit of work based on SqlServerUnitOfWork
 
 ``` csharp
-    /// <summary>
-    /// Current unit of work for ExampleDb running on SqlServer
-    /// </summary>
-    public class SqlServerExampleDbUnitOfWork: SqlServerUnitOfWork<SqlServerExampleDbContext>
-    {
-        public SqlServerExampleDbUnitOfWork(IContextScopeFactory<SqlServerExampleDbContext> dbContextScopeFactory, IAppLoggerProxy logger, IAmbientDbContextLocator ambientDbContextLocator, IBackupEngine backupEngine, IMigrationController migrationController) : base(dbContextScopeFactory, logger, ambientDbContextLocator, backupEngine, migrationController)
-        {
-        }
+/// <summary>
+/// Current unit of work for ExampleDb running on SqlServer
+/// </summary>
+public class SqlServerExampleDbUnitOfWork: SqlServerUnitOfWork<SqlServerExampleDbContext>
+{
+    public SqlServerExampleDbUnitOfWork(IContextScopeFactory<SqlServerExampleDbContext> dbContextScopeFactory, IAppLoggerProxy logger, IAmbientDbContextLocator ambientDbContextLocator, IBackupEngine backupEngine, IMigrationController migrationController) : base(dbContextScopeFactory, logger, ambientDbContextLocator, backupEngine, migrationController)
+    { }
 
-        // Add additional functionality for your unit of work here if needed
-    }
+    // Add additional functionality for your unit of work here if needed
+}
 ```
 
 
@@ -553,9 +582,11 @@ As long as you only add new entities or new properties to your entities migratio
 
 The example shows how to migrate an existing V1_00 database to the final V2_00 schema version bringing the database in a better normalized state. In V1_00 the user type is a string property in table Users. In V2_00 will be added a table UserType and the field Users.UserType will be replace by Users.UserTypeId.
 
-The repo contains a EfConsoleApp1 sample app. In the EfConsoleApp1.Model project there are 2 migrations defined. The first of them - 20250401171019_V1_00- (Migration1) is creating table AppSettings and Users.
+The repo contains a EfConsoleApp1 sample app. In the EfConsoleApp1.Model project there are 2 migrations defined. The first of them - 20250401171019_V1_00 - (Migration1) is creating table AppSettings and Users.
 
-The second migration 20250522151025_V2_00 (Migration2) adds RowVersion fields to both tables. And it adds the new table UserType.
+The second migration 20250522151025_V2_00 (Migration2) adds RowVersion fields to both tables. And it adds the new table UserType. Then the field Users.UserType should be replaced with Users.UserTypeId. 
+
+In a next step the Users.UserType should be removed from database schema. This is not shown here. It requires a new DbContext with adjusted entities. Migrations 20250401171019_V1_00 and 20250522151025_V2_00 will have to be copied to the new DbContext and enhanced with a third migration deleting tables and fields like User.UserType to reach the final database schema. This second DBContext is necessary because without it the data migration from Users.UserType to Users.UserTypeId is not possible with EFCore as Users.UserType is not existing in final database schema.
 
 
 ## Create model data converters: BaseModelDataConverter
@@ -565,83 +596,83 @@ Create converters for data migration for existing database by creating classes i
 Here a sample implementation using EfCore for AppSettings entity:
 
 ``` csharp
-    /// <summary>
-    /// This converter checks at every app start if all expected settings (LastUpdate and Company) are available. If not they are created with default values
-    /// </summary>
-    public class AppSettingsConverterEf: BaseModelDataConverter
+/// <summary>
+/// This converter checks at every app start if all expected settings (LastUpdate and Company) are available. If not they are created with default values
+/// </summary>
+public class AppSettingsConverterEf: BaseModelDataConverter
+{
+    private readonly IRepository<AppSettings> _repo;
+
+    public AppSettingsConverterEf(IUnitOfWork unitOfWork, IAppLoggerProxy appLogger) : base(unitOfWork, appLogger)
     {
-        private readonly IRepository<AppSettings> _repo;
+        RequiredAppVersion = new Version(1, 0, 0);
+        UnitOfWork = unitOfWork;
+        _repo = UnitOfWork.GetRepository<AppSettings>();
+    }
 
-        public AppSettingsConverterEf(IUnitOfWork unitOfWork, IAppLoggerProxy appLogger) : base(unitOfWork, appLogger)
+    /// <summary>
+    /// Check if the premises are fulfilled to run the converter
+    /// </summary>
+    public override bool CheckPremisesToRunConverter()
+    {
+        // Run it always
+        return true;
+    }
+
+
+    /// <summary>
+    /// Run the converter
+    /// </summary>
+    public override void Run()
+    {
+        // Check setting LastUpdate
+        CheckLastUpdateSetting();
+
+        // Check setting Company
+        CheckCompanySetting();
+    }
+
+    public void CheckLastUpdateSetting()
+    {
+        using (var scope = UnitOfWork.GetContextScope())
         {
-            RequiredAppVersion = new Version(1, 0, 0);
-            UnitOfWork = unitOfWork;
-            _repo = UnitOfWork.GetRepository<AppSettings>();
-        }
-
-        /// <summary>
-        /// Check if the premises are fulfilled to run the converter
-        /// </summary>
-        public override bool CheckPremisesToRunConverter()
-        {
-            // Run it always
-            return true;
-        }
-
-
-        /// <summary>
-        /// Run the converter
-        /// </summary>
-        public override void Run()
-        {
-            // Check setting LastUpdate
-            CheckLastUpdateSetting();
-
-            // Check setting Company
-            CheckCompanySetting();
-        }
-
-        public void CheckLastUpdateSetting()
-        {
-            using (var scope = UnitOfWork.GetContextScope())
+            if (_repo.Any(x => x.Key == "LastUpdate"))
             {
-                if (_repo.Any(x => x.Key == "LastUpdate"))
-                {
-                    return;
-                }
-
-                var setting = new AppSettings
-                {
-                    Key = "LastUpdate"
-                };
-
-                _repo.Add(setting);
-
-                scope.SaveChanges();
+                return;
             }
-        }
 
-        public void CheckCompanySetting()
-        {
-            using (var scope = UnitOfWork.GetContextScope())
+            var setting = new AppSettings
             {
-                if (_repo.Any(x => x.Key == "Company"))
-                {
-                    return;
-                }
+                Key = "LastUpdate"
+            };
 
-                var setting = new AppSettings
-                {
-                    Key = "Company",
-                    Value = "TestCompany Ltd"
-                };
+            _repo.Add(setting);
 
-                _repo.Add(setting);
-
-                scope.SaveChanges();
-            }
+            scope.SaveChanges();
         }
     }
+
+    public void CheckCompanySetting()
+    {
+        using (var scope = UnitOfWork.GetContextScope())
+        {
+            if (_repo.Any(x => x.Key == "Company"))
+            {
+                return;
+            }
+
+            var setting = new AppSettings
+            {
+                Key = "Company",
+                Value = "TestCompany Ltd"
+            };
+
+            _repo.Add(setting);
+
+            scope.SaveChanges();
+        }
+    }
+}
 ```
 
 If you have performance issues you can run data conversions with plain SQL too. The disadvantage of working with SQL is that the converters using SQL are not unit testable but only integration testable. Example:
@@ -689,67 +720,67 @@ public class AppSettingsConverterSql : BaseModelDataConverter
 If you do not need data migration or seeding choose DoNothingDataModelConvertersHandlerFactory:
 
 ``` csharp
+/// <summary>
+/// Do NOT seed the database or migrate any existing data
+/// </summary>
+public class DoNothingDataModelConvertersHandlerFactory : IModelDataConvertersHandlerFactory
+{
+    private readonly IAppLoggerProxy _logger;
+
     /// <summary>
-    /// Do NOT seed the database or migrate any existing data
+    /// Default ctor
     /// </summary>
-    public class DoNothingDataModelConvertersHandlerFactory : IModelDataConvertersHandlerFactory
+    public DoNothingDataModelConvertersHandlerFactory(IAppLoggerProxy logger)
     {
-        private readonly IAppLoggerProxy _logger;
-
-        /// <summary>
-        /// Default ctor
-        /// </summary>
-        public DoNothingDataModelConvertersHandlerFactory(IAppLoggerProxy logger)
-        {
-            _logger = logger;
-        }
-
-        /// <summary>
-        /// Create the instance of <see cref="IModelDataConvertersHandler"/> with all loaded converters for data migration
-        /// </summary>
-        /// <returns></returns>
-        public IModelDataConvertersHandler CreateInstance()
-        {
-
-            var h = new ModelDataConvertersHandler(_logger);
-            // Do NOT load converters here
-            return h;
-
-        }
+        _logger = logger;
     }
+
+    /// <summary>
+    /// Create the instance of <see cref="IModelDataConvertersHandler"/> with all loaded converters for data migration
+    /// </summary>
+    /// <returns></returns>
+    public IModelDataConvertersHandler CreateInstance()
+    {
+
+        var h = new ModelDataConvertersHandler(_logger);
+        // Do NOT load converters here
+        return h;
+
+    }
+}
 ```
 
 If you need migrations implement your own factory based on IModelDataConvertersHandlerFactory to load all the required converters based on IModelDataComverter to do the data migrations:
 
 ``` csharp
-    public class SqlServerExampleDbEfModelDataConvertersHandlerFactory: IModelDataConvertersHandlerFactory
+public class SqlServerExampleDbEfModelDataConvertersHandlerFactory: IModelDataConvertersHandlerFactory
+{
+    private readonly IAppLoggerProxy _logger;
+
+    /// <summary>
+    /// Default ctor
+    /// </summary>
+    public SqlServerExampleDbEfModelDataConvertersHandlerFactory(IAppLoggerProxy logger)
     {
-        private readonly IAppLoggerProxy _logger;
-
-        /// <summary>
-        /// Default ctor
-        /// </summary>
-        public SqlServerExampleDbEfModelDataConvertersHandlerFactory(IAppLoggerProxy logger)
-        {
-            _logger = logger;
-        }
-
-        /// <summary>
-        /// Create the instance of <see cref="IModelDataConvertersHandler"/> with all loaded converters for data migration
-        /// </summary>
-        /// <returns></returns>
-        public IModelDataConvertersHandler CreateInstance()
-        {
-            var h = new ModelDataConvertersHandler(_logger);
-
-            // Load converters now in the order you need!
-            h.AddConverter<AppSettingsConverterEf>();
-            h.AddConverter<UserTypeConverterEf>(); // must be done before user migration to have the UserType.ID available
-            h.AddConverter<UsersConverterEf>();
-
-            return h;
-        }
+        _logger = logger;
     }
+
+    /// <summary>
+    /// Create the instance of <see cref="IModelDataConvertersHandler"/> with all loaded converters for data migration
+    /// </summary>
+    /// <returns></returns>
+    public IModelDataConvertersHandler CreateInstance()
+    {
+        var h = new ModelDataConvertersHandler(_logger);
+
+        // Load converters now in the order you need!
+        h.AddConverter<AppSettingsConverterEf>();
+        h.AddConverter<UserTypeConverterEf>(); // must be done before user migration to have the UserType.ID available
+        h.AddConverter<UsersConverterEf>();
+
+        return h;
+    }
+}
 ```
 
 
