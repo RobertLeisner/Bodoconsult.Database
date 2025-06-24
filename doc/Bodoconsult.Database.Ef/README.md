@@ -178,7 +178,9 @@ public class AppSettings : IEntityRequirements
 }
 ```
 
-Do not use prefixes for entities. It is not recommend by MS anymore. In the above example name the class AppSettings instead of TAppSettings
+Do not use prefixes for entities. It is not recommend by MS anymore. In the above example name the class AppSettings instead of TAppSettings for example.
+
+Use attributes to configure properties as required but do not forget later to the configuration of the entity for EFCore properly (see next section).
 
 Entities used with Entity Framework should contain simple get-set properties only. There should not be implemented any kind of logic in an entity. 
 If you want to enhance an entity with logic used extension methods for implementing the logic:
@@ -605,7 +607,7 @@ The proposed way by MS is to let the migrations be created by the integrated EFC
 
 In more complex scenarios in real world i.e. coming from existing databases it is sometimes much easier to create or adjust the migration files manually.
 
-To test migrations from VS use the EFCore tools from Package Manager Console window. Select the project with the migrations in. The connection string for the test is taken from appsettings.json.
+To test migrations from VS use the EFCore tools from Package Manager Console window (PMC). Select the project with the migrations in. The connection string for the test is taken from appsettings.json.
 
 Run the following command to create an empty database with the last available database schema (meaning running all migrations)
 
@@ -621,6 +623,24 @@ Update-Database 20250401171019_V1_00 -Context SqlServerExampleDbContext
 
 See https://learn.microsoft.com/en-us/ef/core/cli/powershell for more details.
 
+## How to make DB schema changes
+
+During development process there may be required a lot of schema changes. It is not a good idea to create a seperate migration for every little change in the schema. Here the EFCore tools will be helpful even for complex projects. So if you need a DB change here is the process we use for:
+
+-   Make the required changes for the entity (see [Entitie basics](#entities))
+
+-   Update the entity EFCore configuration (see [Entity configuration](#entity-configuration))
+
+-   Run the command Add to add a new migration from PMC
+
+```
+Add -Name NewMigration -OutputDir YourMigrationFolderRelativeToProjectFolder
+```
+-   Copy the content of the method Up() in migration file of the newly created migration at the end of the method Up() in the last migration before the new one.
+
+-   Copy the content of the migration designer file of the newly created migration to the migration designer file of the last migration before the new one.
+
+-   Copy the content of the migration designer file of the newly created migration to the model snapshot file.
 
 ## Existing databases
 

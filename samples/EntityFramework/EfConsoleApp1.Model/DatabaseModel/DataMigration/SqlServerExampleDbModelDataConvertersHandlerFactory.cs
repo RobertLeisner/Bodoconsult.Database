@@ -1,4 +1,6 @@
-﻿using Bodoconsult.App.Interfaces;
+﻿// Copyright (c) Bodoconsult EDV-Dienstleistungen GmbH. All rights reserved.
+
+using Bodoconsult.App.Interfaces;
 using Bodoconsult.Database.Ef.Interfaces;
 using Bodoconsult.Database.Ef.MigrationTools;
 
@@ -26,7 +28,7 @@ public class SqlServerExampleDbEfModelDataConvertersHandlerFactory: IModelDataCo
 
         // Load converters now in the order you need!
         h.AddConverter<AppSettingsConverterEf>();
-        h.AddConverter<UserTypeConverterEf>(); // must be done before user migration to hace the UserType.ID available
+        h.AddConverter<UserTypeConverterEf>(); // must be done before user migration to have the UserType.ID available
         h.AddConverter<UsersConverterEf>();
 
         return h;
