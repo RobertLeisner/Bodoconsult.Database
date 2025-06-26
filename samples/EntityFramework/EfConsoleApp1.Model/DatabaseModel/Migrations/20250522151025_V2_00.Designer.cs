@@ -18,8 +18,8 @@ namespace EfConsoleApp1.Model.DatabaseModel.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                            .HasAnnotation("ProductVersion", "9.0.5")
-                            .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
@@ -52,6 +52,30 @@ namespace EfConsoleApp1.Model.DatabaseModel.Migrations
                     .HasDatabaseName("AppSettingsKeyUnique");
 
                 b.ToTable("AppSettings", (string)null);
+            });
+
+            modelBuilder.Entity("EfConsoleApp1.Model.DatabaseModel.Entities.Article", b =>
+            {
+                b.Property<int>("ID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
+
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                b.Property<string>("ArticleName")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
+
+                b.Property<byte[]>("RowVersion")
+                    .IsConcurrencyToken()
+                    .IsRequired()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("rowversion");
+
+                b.HasKey("ID");
+
+                b.ToTable("Article", (string)null);
             });
 
             modelBuilder.Entity("EfConsoleApp1.Model.DatabaseModel.Entities.UserType", b =>

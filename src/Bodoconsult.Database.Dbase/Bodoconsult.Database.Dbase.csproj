@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net8.0-windows</TargetFramework>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -37,6 +37,15 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Bodoconsult.App" Version="1.0.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ImportTasks\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Bodoconsult.Database.Ef.SqlServer\Bodoconsult.Database.Ef.SqlServer.csproj" />
+	  <ProjectReference Include="..\Bodoconsult.Database.Ef\Bodoconsult.Database.Ef.csproj" />
 	</ItemGroup>
 
 </Project>

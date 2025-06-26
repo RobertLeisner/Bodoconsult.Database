@@ -42,7 +42,7 @@ public class DbfImportBaseTask<TData> : FileImportBaseTask<TData> where TData : 
     /// <summary>
     /// The batch size used to send data to the target database
     /// </summary>
-    protected int BatchSize { get; set; } = 50;
+    public int BatchSize { get; set; } = 50;
 
     #endregion Protected Properties
 

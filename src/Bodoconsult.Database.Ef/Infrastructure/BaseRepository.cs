@@ -135,7 +135,7 @@ namespace Bodoconsult.Database.Ef.Infrastructure
                 //return db.Set<TEntity>().Add(entity).Entity;
                 return db.Entry(entity).Entity;
             }
-            catch //(Exception e)
+            catch (Exception e)
             {
                 foreach (var entry in db.ChangeTracker.Entries().ToList())
                 {
@@ -145,7 +145,7 @@ namespace Bodoconsult.Database.Ef.Infrastructure
                     }
                 }
 
-                throw new InvalidOperationException("Repository:Add()");
+                throw new InvalidOperationException("Repository:Add()", e);
 
             }
         }

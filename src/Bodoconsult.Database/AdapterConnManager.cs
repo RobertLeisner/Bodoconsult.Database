@@ -234,6 +234,16 @@ namespace Bodoconsult.Database
             NotifyProgress?.Invoke(98);
         }
 
+        /// <summary>
+        /// Bulk insert data to the database
+        /// </summary>
+        /// <param name="entities">Insert data in a table by bulkcopying it</param>
+        /// <param name="tableName">Table name to insert the data in</param>
+        public virtual void BulkInsertAll<TEntity>(IEnumerable<TEntity> entities, string tableName)
+        {
+            throw new NotSupportedException();
+        }
+
         #endregion
 
 

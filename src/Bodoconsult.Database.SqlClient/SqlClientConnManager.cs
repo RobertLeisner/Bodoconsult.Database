@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using Bodoconsult.Database.Interfaces;
 using Microsoft.Data.SqlClient;
 
@@ -459,6 +460,59 @@ namespace Bodoconsult.Database.SqlClient
             catch (Exception ex)
             {
                 throw new Exception($"ExecAsync:{ConnectionString}:Sql:{cmd.CommandText}", ex);
+            }
+        }
+
+        public override void BulkInsertAll<TEntity>(IEnumerable<TEntity> entities, string tableName)
+        {
+            if (entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+
+                var t = typeof(TEntity);
+
+                using (var bulkCopy = new SqlBulkCopy(conn)
+                       {
+                           DestinationTableName = tableName
+                       })
+                {
+                    using (var table = new DataTable())
+                    {
+                        var properties = t.GetProperties()
+                            .Where(p => p.PropertyType.IsValueType ||
+                                        p.PropertyType == typeof(string)).ToList();
+
+                        foreach (var property in properties)
+                        {
+                            var propertyType = property.PropertyType;
+                            if (propertyType.IsGenericType &&
+                                propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                            {
+                                propertyType = Nullable.GetUnderlyingType(propertyType);
+                            }
+
+                            if (propertyType == null)
+                            {
+                                continue;
+                            }
+
+                            table.Columns.Add(new DataColumn(property.Name, propertyType));
+                        }
+
+                        foreach (var entity in entities)
+                        {
+                            table.Rows.Add(properties.Select(property => property.GetValue(entity, null) ?? DBNull.Value).ToArray());
+                        }
+
+                        bulkCopy.BulkCopyTimeout = 0;
+                        bulkCopy.WriteToServer(table);
+                    }
+                }
             }
         }
 

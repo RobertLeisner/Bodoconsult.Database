@@ -1,18 +1,21 @@
 // Copyright (c) Bodoconsult EDV-Dienstleistungen GmbH.  All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Bodoconsult.App.Interfaces;
 using Bodoconsult.App.Logging;
 using Bodoconsult.Database.Dbase.DbReader;
 using Bodoconsult.Database.Dbase.FileImport;
 using Bodoconsult.Database.Dbase.Helpers;
 using Bodoconsult.Database.Dbase.Test.TestData;
+using EfConsoleApp1.Model.DatabaseModel.Entities;
 
 namespace Bodoconsult.Database.Dbase.Test
 {
     public class DbfImportTaskTests
     {
-
-        string DbFile => "Article.DBF";
+        private static string DbFile => "Article.DBF";
 
         private readonly string _folderPath;
 
@@ -22,7 +25,34 @@ namespace Bodoconsult.Database.Dbase.Test
         {
             var ass = typeof(DbfImportTaskTests).Assembly;
 
-            var root = new DirectoryInfo(ass.Location).Parent.Parent.Parent.Parent;
+            if (ass == null)
+            {
+                throw new ArgumentException("Assembly may not be null");
+            }
+
+            var dir = new DirectoryInfo(ass.Location).Parent;
+
+            if (dir == null)
+            {
+                throw new ArgumentException("Assembly parent directory may not be null");
+            }
+
+            if (dir.Parent == null)
+            {
+                throw new ArgumentException("Assembly parent directories may not be null");
+            }
+
+            if (dir.Parent.Parent == null)
+            {
+                throw new ArgumentException("Assembly parent directories may not be null");
+            }
+
+            var root = dir.Parent.Parent.Parent;
+
+            if (root == null)
+            {
+                throw new ArgumentException("Assembly parent directories may not be null");
+            }
 
             _folderPath = Path.Combine(root.FullName, "TestData");
         }
@@ -44,15 +74,14 @@ namespace Bodoconsult.Database.Dbase.Test
         {
 
             // Arrange 
-            var fileName = "Article.DBF";
 
             // Act  
-            var task = new DbfImportTask<Article>( fileName, _folderPath, _logger, MapToEntityDelegate);
+            var task = new DbfImportTask<Article>(DbFile, _folderPath, _logger, MapToEntityDelegate);
 
             // Assert
             Assert.That(task.FolderPath, Is.EqualTo(_folderPath));
-            Assert.That(task.Name, Is.EqualTo(fileName));
-            Assert.That(task.FullPath, Is.EqualTo(Path.Combine(_folderPath, fileName)));
+            Assert.That(task.Name, Is.EqualTo(DbFile));
+            Assert.That(task.FullPath, Is.EqualTo(Path.Combine(_folderPath, DbFile)));
         }
 
         [Test]
@@ -60,8 +89,7 @@ namespace Bodoconsult.Database.Dbase.Test
         {
 
             // Arrange 
-            var fileName = "Article.DBF";
-            var task = new DbfImportTask<Article>(fileName, _folderPath, _logger, MapToEntityDelegate);
+            var task = new DbfImportTask<Article>(DbFile, _folderPath, _logger, MapToEntityDelegate);
             Assert.That(task.Result.Count, Is.EqualTo(0));
 
             // Act  
@@ -75,7 +103,7 @@ namespace Bodoconsult.Database.Dbase.Test
         {
             var result = new Article
             {
-                Id = ParseHelper.ParseInt(dbf.ColumnValue(record, "ID")) ?? 0,
+                ID = ParseHelper.ParseInt(dbf.ColumnValue(record, "ID")) ?? 0,
                 ArticleName = ParseHelper.ProcessString(dbf.ColumnValue(record, "ARTICLE"))
             };
 

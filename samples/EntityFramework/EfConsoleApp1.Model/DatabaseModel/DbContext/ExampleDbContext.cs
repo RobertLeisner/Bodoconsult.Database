@@ -23,6 +23,8 @@ public class ExampleDbContext : Microsoft.EntityFrameworkCore.DbContext
 
     public DbSet<Users> Users { get; set; }
 
+    public DbSet<Article> Article { get; set; }
+
     public DbSet<UserType> UserType { get; set; }
 
 
@@ -51,6 +53,8 @@ public class ExampleDbContext : Microsoft.EntityFrameworkCore.DbContext
     private static readonly IEntityTypeConfiguration<AppSettings> AppSettingsConfig = new AppSettingsConfig();
     private static readonly IEntityTypeConfiguration<Users> UsersConfig = new UsersConfig();
     private static readonly IEntityTypeConfiguration<UserType> UserTypeConfig = new UserTypeConfig();
+    private static readonly IEntityTypeConfiguration<Article> ArticleConfig = new ArticleConfig();
+
 
     private static void LoadConfig(ModelBuilder modelBuilder)
     {
@@ -58,6 +62,7 @@ public class ExampleDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(AppSettingsConfig);
         modelBuilder.ApplyConfiguration(UsersConfig);
         modelBuilder.ApplyConfiguration(UserTypeConfig);
+        modelBuilder.ApplyConfiguration(ArticleConfig);
 
         //**********************
         // Add relations

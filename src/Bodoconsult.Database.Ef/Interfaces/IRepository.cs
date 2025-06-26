@@ -345,7 +345,7 @@ namespace Bodoconsult.Database.Ef.Interfaces
         TEntity Attach(TEntity entity);
 
         /// <summary>
-        /// Attach an detached entity if it is not attached. Normally not needed!!!
+        /// Attach a detached entity if it is not attached. Normally not needed!!!
         /// </summary>
         /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
         /// <param name="entity">entity to attach</param>
@@ -355,7 +355,7 @@ namespace Bodoconsult.Database.Ef.Interfaces
         /// <summary>
         /// Bulk insert data to the database
         /// </summary>
-        /// <param name="entities"></param>
+        /// <param name="entities">Insert data in a table by bulkcopying it</param>
         void BulkInsertAll(IEnumerable<TEntity> entities);
 
         /// <summary>

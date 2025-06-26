@@ -636,7 +636,7 @@ During development process there may be required a lot of schema changes. It is 
 -   Run the command Add to add a new migration from PMC
 
 ``` powershell
-Add -Name NewMigration -OutputDir YourMigrationFolderRelativeToProjectFolder
+Add-Migration -Name NewMigration -OutputDir YourMigrationFolderRelativeToProjectFolder
 ```
 -   Copy the content of the method Up() in migration file of the newly created migration at the end of the method Up() in the last migration before the new one.
 

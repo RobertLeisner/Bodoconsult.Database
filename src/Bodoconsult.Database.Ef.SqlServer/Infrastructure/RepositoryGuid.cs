@@ -63,13 +63,17 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
                                 propertyType = Nullable.GetUnderlyingType(propertyType);
                             }
 
+                            if (propertyType == null)
+                            {
+                                continue;
+                            }
+
                             table.Columns.Add(new DataColumn(property.Name, propertyType));
                         }
 
                         foreach (var entity in entities)
                         {
-                            table.Rows.Add(
-                                properties.Select(property => property.GetValue(entity, null) ?? DBNull.Value).ToArray());
+                            table.Rows.Add(properties.Select(property => property.GetValue(entity, null) ?? DBNull.Value).ToArray());
                         }
 
                         bulkCopy.BulkCopyTimeout = 0;

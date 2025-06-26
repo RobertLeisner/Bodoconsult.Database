@@ -66,6 +66,11 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
                                 propertyType = Nullable.GetUnderlyingType(propertyType);
                             }
 
+                            if (propertyType == null)
+                            {
+                                continue;
+                            }
+
                             table.Columns.Add(new DataColumn(property.Name, propertyType));
                         }
 

@@ -170,6 +170,13 @@ namespace Bodoconsult.Database.Interfaces
         /// </summary>
         void TestNotifying();
 
+        /// <summary>
+        /// Bulk insert data to the database
+        /// </summary>
+        /// <param name="entities">Insert data in a table by bulkcopying it</param>
+        /// <param name="tableName">Table name to insert the data in</param>
+        void BulkInsertAll<TEntity>(IEnumerable<TEntity> entities, string tableName);
+
 
     }
 }

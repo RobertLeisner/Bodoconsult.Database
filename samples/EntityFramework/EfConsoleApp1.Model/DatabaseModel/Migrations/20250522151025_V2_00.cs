@@ -48,6 +48,19 @@ namespace EfConsoleApp1.Model.DatabaseModel.Migrations
                     table.PrimaryKey("PK_UserType", x => x.ID);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Article",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    ArticleName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Article", x => x.ID);
+                });
         }
 
 

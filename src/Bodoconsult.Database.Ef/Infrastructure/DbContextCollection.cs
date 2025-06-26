@@ -247,9 +247,6 @@ namespace Bodoconsult.Database.Ef.Infrastructure
 
                     lastError = ExceptionDispatchInfo.Capture(e);
                 }
-
-
-
                 catch (Exception e)
                 {
 

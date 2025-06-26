@@ -16,108 +16,132 @@ namespace EfConsoleApp1.Model.DatabaseModel.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("EfConsoleApp1.Model.DatabaseModel.Entities.AppSettings", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<string>("Key")
-                    .IsRequired()
-                    .HasMaxLength(255)
-                    .HasColumnType("nvarchar(255)");
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                b.Property<byte[]>("RowVersion")
-                    .IsConcurrencyToken()
-                    .IsRequired()
-                    .ValueGeneratedOnAddOrUpdate()
-                    .HasColumnType("rowversion");
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
-                b.Property<string>("Value")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("Key")
-                    .IsUnique()
-                    .HasDatabaseName("AppSettingsKeyUnique");
+                    b.HasIndex("Key")
+                        .IsUnique()
+                        .HasDatabaseName("AppSettingsKeyUnique");
 
-                b.ToTable("AppSettings", (string)null);
-            });
+                    b.ToTable("AppSettings", (string)null);
+                });
+
+            modelBuilder.Entity("EfConsoleApp1.Model.DatabaseModel.Entities.Article", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("ArticleName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Article", (string)null);
+                });
 
             modelBuilder.Entity("EfConsoleApp1.Model.DatabaseModel.Entities.UserType", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<byte[]>("RowVersion")
-                    .IsConcurrencyToken()
-                    .IsRequired()
-                    .ValueGeneratedOnAddOrUpdate()
-                    .HasColumnType("rowversion");
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
-                b.Property<string>("UserTypeName")
-                    .IsRequired()
-                    .HasMaxLength(30)
-                    .HasColumnType("nvarchar(30)");
+                    b.Property<string>("UserTypeName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.ToTable("UserType", (string)null);
-            });
+                    b.ToTable("UserType", (string)null);
+                });
 
             modelBuilder.Entity("EfConsoleApp1.Model.DatabaseModel.Entities.Users", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                b.Property<string>("Password")
-                    .HasMaxLength(15)
-                    .HasColumnType("nvarchar(15)");
+                    b.Property<string>("Password")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
-                b.Property<string>("Realname")
-                    .HasMaxLength(40)
-                    .HasColumnType("nvarchar(40)");
+                    b.Property<string>("Realname")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
-                b.Property<string>("Rights")
-                    .HasMaxLength(10)
-                    .HasColumnType("nvarchar(10)");
+                    b.Property<string>("Rights")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
-                b.Property<byte[]>("RowVersion")
-                    .IsConcurrencyToken()
-                    .IsRequired()
-                    .ValueGeneratedOnAddOrUpdate()
-                    .HasColumnType("rowversion");
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
-                b.Property<string>("UserType")
-                    .HasMaxLength(30)
-                    .HasColumnType("nvarchar(30)");
+                    b.Property<string>("UserType")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                b.Property<int>("UserTypeId")
-                    .HasColumnType("int");
+                    b.Property<int>("UserTypeId")
+                        .HasColumnType("int");
 
-                b.Property<string>("Username")
-                    .IsRequired()
-                    .HasMaxLength(30)
-                    .HasColumnType("nvarchar(30)");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.ToTable("Users", (string)null);
-            });
+                    b.ToTable("Users", (string)null);
+                });
 #pragma warning restore 612, 618
         }
     }

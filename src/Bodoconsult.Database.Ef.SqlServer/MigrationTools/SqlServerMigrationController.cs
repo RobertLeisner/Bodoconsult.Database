@@ -175,6 +175,11 @@ namespace Bodoconsult.Database.Ef.SqlServer.MigrationTools
                 {
                     sql = MigrationRunBeforeExistingDb;
 
+                    if (sql == null)
+                    {
+                        return;
+                    }
+
                     var cmds = sql.Split("\r\nGO\r\n", StringSplitOptions.RemoveEmptyEntries);
 
                     var timeout = context.Database.GetCommandTimeout();
