@@ -42,13 +42,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfConsoleApp1.Model", "samp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Ef.SqlServer", "src\Bodoconsult.Database.Ef.SqlServer\Bodoconsult.Database.Ef.SqlServer.csproj", "{96418C32-552F-47ED-9CE8-E9A8F0DCBF87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Ef.Tests", "tests\Bodoconsult.Database.Ef.Tests\Bodoconsult.Database.Ef.Tests.csproj", "{027C05C1-C726-4A35-B663-CE64FFB018A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Ef.Test", "tests\Bodoconsult.Database.Ef.Test\Bodoconsult.Database.Ef.Test.csproj", "{027C05C1-C726-4A35-B663-CE64FFB018A4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D5F0E076-C7F0-4AAF-A016-9346978F2E8E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{99309949-50A5-4AA2-96BF-0EBDF507790C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Test.Utilities", "tests\Bodoconsult.Database.Test.Utilities\Bodoconsult.Database.Test.Utilities.csproj", "{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Dbase", "src\Bodoconsult.Database.Dbase\Bodoconsult.Database.Dbase.csproj", "{4F999312-DC49-4854-80BA-E52579AC64D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Dbase.Ef", "src\Bodoconsult.Database.Dbase.Ef\Bodoconsult.Database.Dbase.Ef.csproj", "{8DDE8EF7-0D4B-4617-B2A0-20CBD6413324}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{1375344A-62D6-496A-A822-AE886298259E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bodoconsult.Database.Dbase.Test", "tests\Bodoconsult.Database.Dbase.Test\Bodoconsult.Database.Dbase.Test.csproj", "{B8AECD94-0BB4-4E67-87AC-1BBCA95C2C61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +124,18 @@ Global
 		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F999312-DC49-4854-80BA-E52579AC64D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F999312-DC49-4854-80BA-E52579AC64D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F999312-DC49-4854-80BA-E52579AC64D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F999312-DC49-4854-80BA-E52579AC64D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DDE8EF7-0D4B-4617-B2A0-20CBD6413324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DDE8EF7-0D4B-4617-B2A0-20CBD6413324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DDE8EF7-0D4B-4617-B2A0-20CBD6413324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DDE8EF7-0D4B-4617-B2A0-20CBD6413324}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8AECD94-0BB4-4E67-87AC-1BBCA95C2C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AECD94-0BB4-4E67-87AC-1BBCA95C2C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AECD94-0BB4-4E67-87AC-1BBCA95C2C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AECD94-0BB4-4E67-87AC-1BBCA95C2C61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +157,9 @@ Global
 		{96418C32-552F-47ED-9CE8-E9A8F0DCBF87} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
 		{027C05C1-C726-4A35-B663-CE64FFB018A4} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
 		{D60A9FCD-8EA3-43E8-A48A-D988F2B37808} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
+		{4F999312-DC49-4854-80BA-E52579AC64D6} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
+		{8DDE8EF7-0D4B-4617-B2A0-20CBD6413324} = {D5F0E076-C7F0-4AAF-A016-9346978F2E8E}
+		{B8AECD94-0BB4-4E67-87AC-1BBCA95C2C61} = {CFFA22B5-2B9A-465D-9219-D93300FF3F4B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95F397C9-3DE2-453B-BB17-C6B3EB3E2FBC}

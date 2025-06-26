@@ -371,7 +371,8 @@ public class BaseUnitOfWork<T> : IUnitOfWork where T : DbContext
     /// Get a context scope
     /// </summary>
     /// <returns>Returns a context scope</returns>
-    public IContextScope GetContextScope(bool autoDetectChanges, bool useTransaction, IsolationLevel isolationLevel)
+    public IContextScope GetContextScope(bool autoDetectChanges, bool useTransaction,
+        IsolationLevel isolationLevel)
     {
         return useTransaction ?
             _dbContextScopeFactory.CreateWithTransaction(isolationLevel, autoDetectChanges) :

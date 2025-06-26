@@ -29,7 +29,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Bodoconsult.App" Version="1.0.4" />
-	  <PackageReference Include="Bodoconsult.App.WinForms" Version="1.0.3" />
+	  <PackageReference Include="Bodoconsult.App.WinForms" Version="1.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -31,6 +31,8 @@ The source code contains NUnit test classes the following source code is extract
 
 > > [Entity Framework Core tools (EFCore tools)](#entity-framework-core-tools-efcore-tools)
 
+> > [How to make DB schema changes](#how-to-make-db-schema-changes)
+
 > > [Existing databases](#existing-databases)
 
 > > [Example for EfCore migrations followed by a data migration](#example-for-efcore-migrations-followed-by-a-data-migration)
@@ -611,13 +613,13 @@ To test migrations from VS use the EFCore tools from Package Manager Console win
 
 Run the following command to create an empty database with the last available database schema (meaning running all migrations)
 
-```
+``` powershell
 Update-Database -Context SqlServerExampleDbContext 
 ```
 
 Run the following command to create an empty database with the request database schema (meaning running only migrations up to 20250401171019_V1_00 included)
 
-```
+``` powershell
 Update-Database 20250401171019_V1_00 -Context SqlServerExampleDbContext
 ```
 
@@ -625,7 +627,7 @@ See https://learn.microsoft.com/en-us/ef/core/cli/powershell for more details.
 
 ## How to make DB schema changes
 
-During development process there may be required a lot of schema changes. It is not a good idea to create a seperate migration for every little change in the schema. Here the EFCore tools will be helpful even for complex projects. So if you need a DB change here is the process we use for:
+During development process there may be required a lot of schema changes. It is not a good idea to create a seperate migration for every little change in the schema. Here the EFCore tools will be helpful even for complex projects. The basic ideas to let the EFCore tools create a new migration, take the content of this migration to the migration before that migration and then remove the new migration. So if you need a DB change here is the process we use for:
 
 -   Make the required changes for the entity (see [Entitie basics](#entities))
 
@@ -633,7 +635,7 @@ During development process there may be required a lot of schema changes. It is 
 
 -   Run the command Add to add a new migration from PMC
 
-```
+``` powershell
 Add -Name NewMigration -OutputDir YourMigrationFolderRelativeToProjectFolder
 ```
 -   Copy the content of the method Up() in migration file of the newly created migration at the end of the method Up() in the last migration before the new one.
@@ -641,6 +643,8 @@ Add -Name NewMigration -OutputDir YourMigrationFolderRelativeToProjectFolder
 -   Copy the content of the migration designer file of the newly created migration to the migration designer file of the last migration before the new one.
 
 -   Copy the content of the migration designer file of the newly created migration to the model snapshot file.
+
+-   Now remove the newly created migration from the project (or delete it)
 
 ## Existing databases
 
@@ -650,7 +654,7 @@ In such a case you have first to update the existing database schema to the new 
 
 The experience has shown in bigger DB project based on EFCore 3.1 with three main database schemas that including data migration into EFCore migrations is not a good idea. Debugging is complicated and implementation difficult to make it unit testable. So the better idea is to perform the migrations as intended by MS and after that run data migrations separately. In the following you will see how we solved the task bringing databases from schema version 1 to target schema version 3. Version 1 was weakly normalized. So compared to the target schema version 3 there were a lot of tables and fields missing. On the other side some fields from schema version 1 could be removed after normalization. Some old tables were replaced by new tables too. So version 2 is an intermediate state adding the new tables and fields as required. Version 3 then cleans the database schema to the finally required state by removing unused tables and unused fields.
 
-The first approach was to that all in one solution. Theoretically this should be possible. In reality you need to define three sets of entities, entity configs and DBContexts for each of the schema version. This makes configuration for example of the entities more demanding as entity XYZ_V1 should be mapped to table XYZ and XYZ_V2 and XYZ_V3 too. Yes, you can do that. We failed with this approach due to the huge complexity of this approach.
+The first approach was to that all in one solution. Theoretically this should be possible. In reality you need to define three sets of entities, entity configs and DBContexts for each of the schema versions. This makes configuration for example of the entities more demanding as entity XYZ_V1 should be mapped to table XYZ and XYZ_V2 and XYZ_V3 too. Yes, you can do that. We failed with this approach due to the huge complexity of this approach.
 
 Spending a lot of time with experiments we decided to handle each schema version in a separate solution with a separate busienss logic, data model and UI. This kept at least the complexity added by using EFCore at an acceptable level. In each solution you have the model related to the current schema version included. The migrations from version 1 were then taken to version 2 and a new migration added to reach version 2. In version 3 project the model was as required in version 3 and the migrations from version 2 were added completely and a new migration was added to reach version 3.
 
