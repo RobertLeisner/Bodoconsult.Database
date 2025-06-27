@@ -31,6 +31,10 @@ namespace Bodoconsult.Database.SqlClient
             }
         }
 
+        /// <summary>
+        /// Fields not allowed to copy by BulkCopy operations
+        /// </summary>
+        public static List<string> FieldsNotAllowedForBulkCopy => ["rowversion", "id"];
 
         /// <summary>
         /// Tests the connectionstring.
@@ -476,7 +480,9 @@ namespace Bodoconsult.Database.SqlClient
 
                 var t = typeof(TEntity);
 
-                using (var bulkCopy = new SqlBulkCopy(conn)
+                var options = SqlBulkCopyOptions.Default;
+
+                using (var bulkCopy = new SqlBulkCopy(conn, options, null)
                        {
                            DestinationTableName = tableName
                        })
@@ -484,8 +490,9 @@ namespace Bodoconsult.Database.SqlClient
                     using (var table = new DataTable())
                     {
                         var properties = t.GetProperties()
-                            .Where(p => p.PropertyType.IsValueType ||
-                                        p.PropertyType == typeof(string)).ToList();
+                            .Where(p => !FieldsNotAllowedForBulkCopy.Contains(p.Name.ToLowerInvariant()) &&
+                                        (p.PropertyType.IsValueType || p.PropertyType == typeof(string)))
+                            .ToList();
 
                         foreach (var property in properties)
                         {
@@ -502,6 +509,9 @@ namespace Bodoconsult.Database.SqlClient
                             }
 
                             table.Columns.Add(new DataColumn(property.Name, propertyType));
+
+                            var mapName = new SqlBulkCopyColumnMapping(property.Name, property.Name);
+                            bulkCopy.ColumnMappings.Add(mapName);
                         }
 
                         foreach (var entity in entities)

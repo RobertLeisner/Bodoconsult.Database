@@ -20,6 +20,11 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
     public class Repository<TEntity, TContext> : BaseRepository<TEntity, TContext> where TEntity : class, IEntityRequirements, new() where TContext : DbContext
     {
         /// <summary>
+        /// Fields not allowed to copy by BulkCopy operations
+        /// </summary>
+        public static List<string> FieldsNotAllowedForBulkCopy => ["rowversion", "id"];
+
+        /// <summary>
         /// default ctor
         /// </summary>
         /// <param name="contextLocator">Current database context locator</param>
@@ -46,7 +51,9 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
 
                 var t = typeof(TEntity);
 
-                using (var bulkCopy = new SqlBulkCopy(conn)
+                var options = SqlBulkCopyOptions.Default;
+
+                using (var bulkCopy = new SqlBulkCopy(conn, options, null)
                 {
                     DestinationTableName = GetTableName()
                 })
@@ -54,8 +61,9 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
                     using (var table = new DataTable())
                     {
                         var properties = t.GetProperties()
-                                                   .Where(p => p.PropertyType.IsValueType ||
-                                                               p.PropertyType == typeof(string)).ToList();
+                                                   .Where(p => !FieldsNotAllowedForBulkCopy.Contains(p.Name.ToLowerInvariant()) &&
+                                                               (p.PropertyType.IsValueType || p.PropertyType == typeof(string)))
+                                                   .ToList();
 
                         foreach (var property in properties)
                         {
@@ -72,13 +80,17 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
                             }
 
                             table.Columns.Add(new DataColumn(property.Name, propertyType));
+
+                            var mapName = new SqlBulkCopyColumnMapping(property.Name, property.Name);
+                            bulkCopy.ColumnMappings.Add(mapName);
                         }
 
                         foreach (var entity in entities)
                         {
-                            table.Rows.Add(
-                                properties.Select(property => property.GetValue(entity, null) ?? DBNull.Value).ToArray());
+                            table.Rows.Add(properties.Select(property => property.GetValue(entity, null) ?? DBNull.Value).ToArray());
                         }
+
+                        table.AcceptChanges();
 
                         bulkCopy.BulkCopyTimeout = 0;
                         bulkCopy.WriteToServer(table);

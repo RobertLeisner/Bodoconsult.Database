@@ -5,8 +5,6 @@ Bodoconsult.Database.Ef
 
 Bodoconsult.Database.Ef is a library based on Microsoft Entity Framework Core (EFCore). EFCore is an object-relational-mapper (ORM) bringing the relational database model together with object ortiented programming languages.
 
-
-
 # How to use the library
 
 The source code contains NUnit test classes the following source code is extracted from. The samples below show the most helpful use cases for the library.
@@ -95,6 +93,15 @@ In the following documentation we use the following (uncomplete) layer model of 
 
 -   **Model layer**: Defines the entities (tables) used in the database.
 
+## EfCore working modes
+
+-   **Attached and tracked entities**: Attached means the DBContext knows the entity. Attached entities are normally tracked by the DBContext meaning all changes on the entity done in the DbContext are known to the DBContext. This is the default mode.
+
+-   **Attached and untracked entities**: Loading an entity untracked means the DBContext knows the entity but does not care for changes to it. Not caring for changes makes loading of the entities faster. This mode is normally used to load entities transferred to other data formats like a DTO if tracking makis no sense at all.
+
+-   **Unattached and untracked entities**: As soon as you have an entity created by another DBContext then the current one it is unattached to this DBContext. You can attach it to the DBContext if required producing an request to the database to load the state of the entity in the database for resolving changes to the entity.
+
+For server apps employing a GUI or a webservice or similar the attached and tracked mode may not be very helpful most of the times. Imagine a table Customer the GUI client will edit and store then back to database. For such scenarios you have to employ some kind of a DTO to transfer data maybe via GRPC from server to client and return. Loading the entities from database will be done probably in two different DBContexts. So the tracking will not be very helpful at least in the first DBContext. 
 
 ## Database layer seen from database service layer
 
@@ -181,6 +188,8 @@ public class AppSettings : IEntityRequirements
 ```
 
 Do not use prefixes for entities. It is not recommend by MS anymore. In the above example name the class AppSettings instead of TAppSettings for example.
+
+RowVersion fields are helpful for checking if a data row was been updated since it was fetched. The time period between fetching the data and trying to save it to database should be short. Best is staying in the execution time of one method. RowVersion fields are helpful mainly if working in tracked mode. In untracked mode RowVersion fields proofed to be not very helpful.
 
 Use attributes to configure properties as required but do not forget later to the configuration of the entity for EFCore properly (see next section).
 

@@ -24,13 +24,13 @@ namespace Bodoconsult.Database.Dbase.Test;
 
 public class DbfImportEfTaskTests : BaseDatabaseTests
 {
-    private static string DbFile => "Article.DBF";
+    private static string DbfFileName => "Article.DBF";
 
     private readonly string _folderPath;
 
     private readonly IAppLoggerProxy _logger = new AppLoggerProxy(new FakeLoggerFactory(), new LogDataFactory(), "Blubb");
 
-    private readonly SqlServerExampleDbUnitOfWork _uow;
+    private readonly SqlServerExampleDbUnitOfWork _unitOfWork;
 
     private readonly IRepository<Article> _articleRepository;
 
@@ -84,8 +84,8 @@ public class DbfImportEfTaskTests : BaseDatabaseTests
         IMigrationController migrationController = new SqlServerMigrationController<SqlServerExampleDbContext>(modelDataConvertersHandlerFactory, _logger);
 
         // Act  
-        _uow = new SqlServerExampleDbUnitOfWork(dbContextScopeFactory, _logger, ambientDbContextLocator, backupEngine, migrationController);
-        _articleRepository = _uow.GetRepository<Article>();
+        _unitOfWork = new SqlServerExampleDbUnitOfWork(dbContextScopeFactory, _logger, ambientDbContextLocator, backupEngine, migrationController);
+        _articleRepository = _unitOfWork.GetRepository<Article>();
 
         //// Test
         //var article = new Article
@@ -111,7 +111,7 @@ public class DbfImportEfTaskTests : BaseDatabaseTests
     public void Clear()
     {
         _logger.Dispose();
-        _uow.Dispose();
+        _unitOfWork.Dispose();
     }
 
     [Test]
@@ -121,34 +121,34 @@ public class DbfImportEfTaskTests : BaseDatabaseTests
         // Arrange 
 
         // Act  
-        var task = new DbfImportEfTask<Article>(DbFile, _folderPath, _logger, MapToEntityDelegate, _uow);
+        var task = new DbfImportEfTask<Article>(DbfFileName, _folderPath, _logger, MapToEntityDelegate, _unitOfWork);
 
         // Assert
         Assert.That(task.FolderPath, Is.EqualTo(_folderPath));
-        Assert.That(task.Name, Is.EqualTo(DbFile));
-        Assert.That(task.FullPath, Is.EqualTo(Path.Combine(_folderPath, DbFile)));
+        Assert.That(task.Name, Is.EqualTo(DbfFileName));
+        Assert.That(task.FullPath, Is.EqualTo(Path.Combine(_folderPath, DbfFileName)));
     }
 
-    //[Test]
-    //public void Execute_ValidSetupBulkCopy_PropertiesSetCorrectly()
-    //{
+    [Test]
+    public void Execute_ValidSetupBulkCopy_PropertiesSetCorrectly()
+    {
 
-    //    // Arrange 
-    //    ClearArticles();
+        // Arrange 
+        ClearArticles();
 
-    //    var task = new DbfImportEfTask<Article>(DbFile, _folderPath, _logger, MapToEntityDelegate, _uow)
-    //    {
-    //        UseBulkInsert = true,
-    //        BatchSize = 50
-    //    };
-    //    Assert.That(Count(), Is.EqualTo(0));
+        var task = new DbfImportEfTask<Article>(DbfFileName, _folderPath, _logger, MapToEntityDelegate, _unitOfWork)
+        {
+            UseBulkInsert = true,
+            BatchSize = 50
+        };
+        Assert.That(Count(), Is.EqualTo(0));
 
-    //    // Act  
-    //    task.Execute();
+        // Act  
+        task.Execute();
 
-    //    // Assert
-    //    Assert.That(Count(), Is.Not.EqualTo(0));
-    //}
+        // Assert
+        Assert.That(Count(), Is.Not.EqualTo(0));
+    }
 
 
     [Test]
@@ -158,7 +158,7 @@ public class DbfImportEfTaskTests : BaseDatabaseTests
         // Arrange 
         ClearArticles();
 
-        var task = new DbfImportEfTask<Article>(DbFile, _folderPath, _logger, MapToEntityDelegate, _uow)
+        var task = new DbfImportEfTask<Article>(DbfFileName, _folderPath, _logger, MapToEntityDelegate, _unitOfWork)
         {
             UseBulkInsert = false,
             BatchSize = 50
@@ -175,7 +175,7 @@ public class DbfImportEfTaskTests : BaseDatabaseTests
 
     private int Count()
     {
-        using (_uow.GetReadOnlyContextScope())
+        using (_unitOfWork.GetReadOnlyContextScope())
         {
             return _articleRepository.Count();
         }
@@ -183,7 +183,7 @@ public class DbfImportEfTaskTests : BaseDatabaseTests
 
     private void ClearArticles()
     {
-        _uow.RunSql("DELETE FROM Articles;");
+        _unitOfWork.RunSql("DELETE FROM Article;");
     }
 
     private Article MapToEntityDelegate(DbfResult dbf, List<string> record)

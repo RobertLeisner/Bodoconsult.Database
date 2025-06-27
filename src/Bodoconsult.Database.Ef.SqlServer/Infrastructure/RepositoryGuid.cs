@@ -16,6 +16,10 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
     /// <typeparam name="TContext"></typeparam>
     public class RepositoryGuid<TEntity, TContext> : BaseRepositoryGuid<TEntity, TContext> where TEntity : class, IEntityRequirementsGuid, new() where TContext : DbContext
     {
+        /// <summary>
+        /// Fields not allowed to copy by BulkCopy operations
+        /// </summary>
+        public static List<string> FieldsNotAllowedForBulkCopy => ["rowversion"];
 
         /// <summary>
         /// default ctor
@@ -43,7 +47,9 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
 
                 var t = typeof(TEntity);
 
-                using (var bulkCopy = new SqlBulkCopy(conn)
+                var options = SqlBulkCopyOptions.Default;
+
+                using (var bulkCopy = new SqlBulkCopy(conn, options, null)
                 {
                     DestinationTableName = GetTableName()
                 })
@@ -51,8 +57,9 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
                     using (var table = new DataTable())
                     {
                         var properties = t.GetProperties()
-                            .Where(p => p.PropertyType.IsValueType ||
-                                        p.PropertyType == typeof(string)).ToList();
+                            .Where(p => !FieldsNotAllowedForBulkCopy.Contains(p.Name.ToLowerInvariant()) &&
+                                        (p.PropertyType.IsValueType || p.PropertyType == typeof(string)))
+                            .ToList();
 
                         foreach (var property in properties)
                         {
@@ -69,6 +76,9 @@ namespace Bodoconsult.Database.Ef.SqlServer.Infrastructure
                             }
 
                             table.Columns.Add(new DataColumn(property.Name, propertyType));
+
+                            var mapName = new SqlBulkCopyColumnMapping(property.Name, property.Name);
+                            bulkCopy.ColumnMappings.Add(mapName);
                         }
 
                         foreach (var entity in entities)
