@@ -11,19 +11,45 @@ The source code contains NUnit test classes the following source code is extract
 
 >   [Overview](#overview)
 
->   [Entities](#entities)
+> > [Points you should know before using EFCore](#points-you-should-know-before-using-efcore)
 
->   [Entity configuration](#entity-configuration)
+> > [Recommened layers for database access in an app](#recommened-layers-for-database-access-in-an-app)
 
->   [Database context](#database-context)
+> > [EfCore working modes](#efcore-working-modes)
 
->   [Enhance database context for target database type](#enhance-database-context-for-target-database-type)
+> > []()
 
->   [Create a DbContext factory](#create-a-dbcontext-factory)
+--
 
->   [Create a unit of work based on SqlServerUnitOfWork](#create-a-unit-of-work-based-on-sqlserverunitofwork)
+>  [How to use Bodoconsult.Database.Ef in database service layer](#how-to-use-bodoconsultdatabaseef-in-database-service-layer)
 
->   [Handling evolving database schemas: Migrations](#handling-evolving-database-schemas-migrations)
+> > [Main classes in Bodoconsult.Database.Ef](#main-classes-in-bodoconsultdatabaseef)
+
+> > [The entity interfaces IEntityRequirementsGuid and IEntityRequirements](#the-entity-interfaces-ientityrequirementsguid-and-ientityrequirements)
+
+> > [The repository classes based on interfaces IRepository and IRepositoryGuid](#the-repository-classes-based-on-interfaces-irepository-and-irepositoryguid)
+
+
+--
+
+> [Setting up the database context with Bodoconsult.Database.Ef](#setting-up-the-database-context-with-bodoconsultdatabaseef)
+
+> >   [Entities](#entities)
+
+> >   [Entity configuration](#entity-configuration)
+
+> >  [Database context](#database-context)
+
+> >  [Enhance database context for target database type](#enhance-database-context-for-target-database-type)
+
+>  >  [Create a DbContext factory](#create-a-dbcontext-factory)
+
+>  >  [Create a unit of work based on SqlServerUnitOfWork](#create-a-unit-of-work-based-on-sqlserverunitofwork)
+
+
+--
+
+>  [Handling evolving database schemas: Migrations](#handling-evolving-database-schemas-migrations)
 
 > > [Overview migrations](#overview-migrations)
 
@@ -40,8 +66,6 @@ The source code contains NUnit test classes the following source code is extract
 > > [Create a model data conversion handler factory: IModelDataConvertersHandlerFactory](#create-a-model-data-conversion-handler-factory-imodeldataconvertershandlerfactory)
 
 > > [Running schema and data migrations: IMigrationController](#running-schema-and-data-migrations-imigrationcontroller)
-
-> > []()
 
 > > []()
 
@@ -103,7 +127,11 @@ In the following documentation we use the following (uncomplete) layer model of 
 
 For server apps employing a GUI or a webservice or similar the attached and tracked mode may not be very helpful most of the times. Imagine a table Customer the GUI client will edit and store then back to database. For such scenarios you have to employ some kind of a DTO to transfer data maybe via GRPC from server to client and return. Loading the entities from database will be done probably in two different DBContexts. So the tracking will not be very helpful at least in the first DBContext. 
 
-## Database layer seen from database service layer
+
+
+# How to use Bodoconsult.Database.Ef in database service layer
+
+## Main classes in Bodoconsult.Database.Ef
 
 The business logic layer should not access the database layer directly. A direct access to database layer weakens replaceablility and testability of the business logic layer.
 
@@ -149,6 +177,411 @@ The following chart shows the intended (uncomplete) database related layering of
 
 ![Database layer](DbLayer.png)
 
+## The entity interfaces IEntityRequirementsGuid and IEntityRequirements
+
+Entities to be used with Bodoconsult.Database.Ef have to implement interface IEntityRequirements or IEntityRequirementsGuid.
+
+Entities having an integer primary key field have to implement IEntityRequirements interface:
+
+``` csharp
+/// <summary>
+/// Defines basic requirements for POCO entity properties with an integer ID column as primary key field
+/// </summary>
+/// <remarks>May be used to force creation of DateCreated, DateChanged, UserCreated, userChanged properties for an entity.
+/// If all your POCO entities implement this interface or a derivative of it, it may be used to collect repositories automatically via reflection.</remarks>
+public interface IEntityRequirements
+{
+    /// <summary>
+    /// Primary key column with unique values
+    /// </summary>
+    int ID { get; set; }
+
+
+    /// <summary>
+    /// Row version to solve concurrency issues
+    /// </summary>
+    byte[] RowVersion { get; set; }
+
+}
+```
+
+Entities requiring a GUID based primary key field have to implement IEntityRequirementsGuid interface:
+
+``` csharp
+/// <summary>
+/// Defines basic requirements for POCO entity properties with an uniqueidentifier ID column as primary key field
+/// </summary>
+/// <remarks>May be used to force creation of DateCreated, DateChanged, UserCreated, userChanged properties for a entity.
+/// If all your POCO entities implement this interface or a derivative of it, it may be used to collect repositories automatically via reflection.</remarks>
+public interface IEntityRequirementsGuid
+{
+    /// <summary>
+    /// Primary key column with unique values
+    /// </summary>
+    Guid Uid { get; set; }
+
+
+    /// <summary>
+    /// Row version to solve concurrency issues
+    /// </summary>
+    byte[] RowVersion { get; set; }
+
+}
+```
+
+## The repository classes based on interfaces IRepository and IRepositoryGuid
+
+The generic implementations of the interfaces IRepository and IRepositoryGuid are intended to be used for a simplified access to data in a database table. 
+
+``` csharp
+/// <summary>
+/// Interface for StSys data repositories
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
+public interface IRepository<TEntity> where TEntity : class, IEntityRequirements, new()
+{
+    /// <summary>
+    /// Any items in set data set
+    /// </summary>
+    /// <returns>true if any items</returns>
+    bool Any();
+
+    /// <summary>
+    /// Any items in set data set
+    /// </summary>
+    /// <param name="where">condition</param>
+    /// <returns>true if any items</returns>
+    bool Any(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Any items in set data set (asyncron version)
+    /// </summary>
+    /// <returns>true if any items</returns>
+    Task<bool> AnyAsync();
+
+    /// <summary>
+    /// Any items in set data set (asyncron version)
+    /// </summary>
+    /// <param name="where">condition</param>
+    /// <returns>true if any items</returns>
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Create a new entity. Requires the ID to be 0. If the ID is not 0 the existing entity with this ID is updated
+    /// </summary>
+    /// <param name="entity">entity to add</param>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <returns></returns>
+    TEntity Add(TEntity entity);
+
+    /// <summary>
+    /// Add a list of entities to the store
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entities">list of entities</param>
+    void Add(IEnumerable<TEntity> entities);
+
+    /// <summary>
+    /// Create or update an entity
+    /// </summary>
+    /// <param name="entity">entity to add</param>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <returns></returns>
+    TEntity AddOrUpdate(TEntity entity);
+
+    /// <summary>
+    /// Create a new entity (asyncron version)
+    /// </summary>
+    /// <param name="entity">entity to add</param>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <returns></returns>
+    Task<TEntity> AddAsync(TEntity entity);
+
+    /// <summary>
+    /// Add a list of entities to the store (asyncron version)
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entities">list of entities</param>
+    Task AddAsync(IEnumerable<TEntity> entities);
+
+    /// <summary>
+    /// Add a list of entities to the store. Does not check nested entities. Use normally with plain new pocos to speed up mass imports
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entities">list of entities</param>
+    void AddBatch(IEnumerable<TEntity> entities);
+
+    /// <summary>
+    /// Delete entities 
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <returns></returns>
+    bool Delete(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Deletes a entity 
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entity">Entity to delete</param>
+    /// <returns>true on success</returns>
+    bool Delete(TEntity entity);
+
+    /// <summary>
+    /// Delete entities (asyncron version)
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <returns></returns>
+    Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Deletes a entity  (asyncron version)
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entity">Entity to delete</param>
+    /// <returns>true on success</returns>
+    Task<bool> DeleteAsync(TEntity entity);
+
+    /// <summary>
+    /// Drop all entities
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    void DropAll();
+
+    /// <summary>
+    /// Get an untracked entity using delegate
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    TEntity GetOne(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Get an untracked entity using delegate
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <param name="loadNestedEntities">Load all nested entities</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    TEntity GetOne(Expression<Func<TEntity, bool>> where, bool loadNestedEntities);
+
+    /// <summary>
+    /// Get an untracked entity using delegate with selected includes
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <param name="includePaths">Load all entities from the selected apths. Paths separated by semicolon.</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    TEntity GetOneInclude(Expression<Func<TEntity, bool>> where, string includePaths);
+
+    /// <summary>
+    /// Get a tracked entity using delegate (
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    TEntity GetOneTracked(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Get a tracked entity using delegate (
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <param name="loadNestedEntities">Load all nested entities</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    TEntity GetOneTracked(Expression<Func<TEntity, bool>> where, bool loadNestedEntities);
+
+    /// <summary>
+    /// Get a tracked entity using delegate with selected includes
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <param name="includePaths">Load all entities from the selected apths. Paths separated by semicolon.</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    TEntity GetOneTrackedInclude(Expression<Func<TEntity, bool>> where, string includePaths);
+
+    /// <summary>
+    /// Get an entity using delegate (asyncron version)
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Get an entity using delegate (asyncron version)
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="where">selection expression</param>
+    /// <param name="loadNestedEntities">Load all nested entities</param>
+    /// <returns>Requested entity or null if entity not found</returns>
+    Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> where, bool loadNestedEntities);
+
+    /// <summary>
+    /// Get all entities as IQueryable. Entities will be loaded untracked.
+    /// </summary>
+    /// <returns>Queryable list of all entities</returns>
+    IQueryable<TEntity> GetAll();
+
+    /// <summary>
+    /// Get all entities as IQueryable. Entities will be loaded untracked.
+    /// </summary>
+    /// <returns>Queryable list of all entities</returns>
+    IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] includeProperties);
+
+    /// <summary>
+    /// Gets entities using selection delegate. Entities will be loaded tracked.
+    /// </summary>
+    /// <param name="where">selection delegate</param>
+    /// <returns>List of entities</returns>
+    IQueryable<TEntity> GetListTracked(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Gets entities using selection delegate. Entities will be loaded tracked.
+    /// </summary>
+    /// <param name="where">selection delegate</param>
+    /// <param name="includeProperties">Related properties to include</param>
+    /// <returns>List of entities</returns>
+    IQueryable<TEntity> GetListTracked(Expression<Func<TEntity, bool>> where, params Expression<Func<TEntity, object>>[] includeProperties);
+
+    /// <summary>
+    /// Get all entities as IQueryable. Entities will be loaded tracked. Entities will be loaded tracked.
+    /// </summary>
+    /// <returns>Queryable list of all entities</returns>
+    IQueryable<TEntity> GetAllTracked();
+
+    /// <summary>
+    /// Get all entities as IQueryable. Entities will be loaded tracked. Entities will be loaded tracked.
+    /// </summary>
+    /// <returns>Queryable list of all entities</returns>
+    IQueryable<TEntity> GetAllTracked(params Expression<Func<TEntity, object>>[] includeProperties);
+
+    /// <summary>
+    /// Gets entities using selection delegate
+    /// </summary>
+    /// <param name="where">selection delegate</param>
+    /// <returns>List of entities</returns>
+    IQueryable<TEntity> GetList(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Gets entities using selection delegate
+    /// </summary>
+    /// <param name="where">selection delegate</param>
+    /// <param name="includeProperties">Related properties to include</param>
+    /// <returns>List of entities</returns>
+    IQueryable<TEntity> GetList(Expression<Func<TEntity, bool>> where, params Expression<Func<TEntity, object>>[] includeProperties);
+
+    /// <summary>
+    /// Get number of entities
+    /// </summary>
+    /// <returns>Number of entities found</returns>
+    int Count();
+
+    /// <summary>
+    /// Get number of entities
+    /// </summary>
+    /// <returns>Number of entities found</returns>
+    int Count(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Get number of entities (asyncron version)
+    /// </summary>
+    /// <returns>Number of entities found</returns>
+    Task<int> CountAsync();
+
+    /// <summary>
+    /// Get number of entities (asyncron version)
+    /// </summary>
+    /// <returns>Number of entities found</returns>
+    Task<int> CountAsync(Expression<Func<TEntity, bool>> where);
+
+    /// <summary>
+    /// Update a entity and all nested enties using the Microsoft style. Prefer usage of <see cref="Update"/> or
+    /// <see cref="UpdateTopLevelEntityOnly"/>due to
+    /// better performance and more stable behaviour in a disconnected scenario
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/>
+    /// of the current UnitOfWork.</remarks>
+    /// <param name="entity">Entity to update</param>
+    /// <returns>true on success</returns>
+    /// <remarks>Uses EFCore default implementation: if the entity is detached, it will be attached and set to Modified state and all
+    ///  nested enties will be set to Modified state too. This behaviour may result in lots of (unncessary) database updates and
+    /// as result of them index fragmentation in the database.</remarks>
+    TEntity UpdateMs(TEntity entity);
+
+    /// <summary>
+    /// Update a entity and all nested enties
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entity">Entity to update</param>
+    /// <returns>true on success</returns>
+    ///  <remarks>Uses own update implementation: detached entities will be attached and all nested entities in entity graph will be checked for changes.
+    /// This behaviour produces much less update statements in the database.</remarks>
+    TEntity Update(TEntity entity);
+
+    /// <summary>
+    /// Update a entity but no nested entities
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entity">Entity to update</param>
+    /// <returns>true on success</returns>
+    /// <remarks>Uses own update implementation: updates only the etity itself and no nested enties.</remarks>
+    TEntity UpdateTopLevelEntityOnly(TEntity entity);
+
+    /// <summary>
+    /// Update a entity (asyncron version)
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entity">Entity to update</param>
+    /// <returns>true on success</returns>
+    Task<TEntity> UpdateAsync(TEntity entity);
+
+    /// <summary>
+    /// Attach an detached entity. Normally not needed!!!
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entity">entity to attach</param>
+    /// <returns>returns th attached entity</returns>
+    TEntity Attach(TEntity entity);
+
+    /// <summary>
+    /// Attach a detached entity if it is not attached. Normally not needed!!!
+    /// </summary>
+    /// <remarks>. Does not commit the entity to database. Call <see cref="IContextScope.SaveChanges()"/> of the current UnitOfWork.</remarks>
+    /// <param name="entity">entity to attach</param>
+    /// <returns>returns the attached entity</returns>
+    TEntity AttachIfNot(TEntity entity);
+
+    /// <summary>
+    /// Bulk insert data to the database
+    /// </summary>
+    /// <param name="entities">Insert data in a table by bulkcopying it</param>
+    void BulkInsertAll(IEnumerable<TEntity> entities);
+
+    /// <summary>
+    /// Async bulk insert data to the database
+    /// </summary>
+    /// <param name="entities"></param>
+    Task BulkInsertAllAsync(IEnumerable<TEntity> entities);
+
+    /// <summary>
+    /// Get all include paths for the type TEnity
+    /// </summary>
+    /// <returns></returns>
+    IEnumerable<string> GetIncludePaths();
+
+    /// <summary>
+    /// Load all entites for a query result
+    /// </summary>
+    /// <param name="query">Query to prepare for loading all nested entities for the result</param>
+    /// <returns>Query prepare for loading all nested entities for the result</returns>
+    IQueryable<TEntity> LoadAllNestedEntities(IQueryable<TEntity> query);
+}
+```
+
+# Setting up the database context with Bodoconsult.Database.Ef
+
 ## Process of setting up the database context
 
 The unit of work should be loaded as a singleton instance on app start. During instanciation the DbContext is created, the necessary migrations are executed and if needed existing data are migrated or a fresh database is seeded.
@@ -156,7 +589,7 @@ The unit of work should be loaded as a singleton instance on app start. During i
 ![Unit of work](UnitOfWork.png)
 
 
-# Entities 
+## Entities 
 
 If talking about Entity Framework an entity is a simple class representing a table in the database. Sometimes entities are named *plain old code objects* (POCO) too.
 
@@ -187,6 +620,8 @@ public class AppSettings : IEntityRequirements
 }
 ```
 
+Entities to be used with Bodoconsult.Database.Ef have to implement interface IEntityRequirements or IEntityRequirementsGuid.
+
 Do not use prefixes for entities. It is not recommend by MS anymore. In the above example name the class AppSettings instead of TAppSettings for example.
 
 RowVersion fields are helpful for checking if a data row was been updated since it was fetched. The time period between fetching the data and trying to save it to database should be short. Best is staying in the execution time of one method. RowVersion fields are helpful mainly if working in tracked mode. In untracked mode RowVersion fields proofed to be not very helpful.
@@ -216,7 +651,7 @@ public static class AppSettingsExtensions
 
 If logic is implemented in the entity class itself, the logic is loaded to memory per instance created of the entity type. The extension method is loaded only once. Espacially for heavy-usage entities is may reduce the memory pressure of your app.
 
-# Entity configuration
+## Entity configuration
 
 Entity configuration for entity properties may be done in the entity class itself via attributes like [Required(AllowEmptyStrings = false)] in the above sample.
 
@@ -255,7 +690,7 @@ public class AppSettingsConfig : IEntityTypeConfiguration<AppSettings>
 }
 ```
 
-# Database context
+## Database context
 
 Implement a base DbContext based class:
 
@@ -361,7 +796,7 @@ public class ExampleDbContext : Microsoft.EntityFrameworkCore.DbContext
 }
 ```
 
-# Enhance database context for target database type
+## Enhance database context for target database type
 
 In case your DBContext instance requires implementations specific for a certain type of database, implement a class derived from your base DbContextclass and add or adjust the required features.
 
@@ -396,7 +831,7 @@ public class SqlServerExampleDbContext : ExampleDbContext
 }
 ```
 
-# Create a design time DbContext factory: IDesignTimeDbContextFactory<SqlServerExampleDbContext>
+## Create a design time DbContext factory: IDesignTimeDbContextFactory<SqlServerExampleDbContext>
 
 The design time factory is used by the EFCore tools. Locate this class in the same folder in the StartProject as defined in VS.
 
@@ -449,7 +884,7 @@ public class SqlServerDesignTimeExampleDbContextFactory : IDesignTimeDbContextFa
 }
 ```
 
-# Create a production or testing DbContext factory: IDbContextWithConfigFactory<SqlServerExampleDbContext>
+## Create a production or testing DbContext factory: IDbContextWithConfigFactory<SqlServerExampleDbContext>
 
 Locate this class in the same folder as the DBContext.
 
@@ -569,7 +1004,7 @@ public class SqlServerExampleDbHighPerformanceContextFactory : IDbContextWithCon
 }
 ```
 
-# Create a unit of work based on SqlServerUnitOfWork
+## Create a unit of work based on SqlServerUnitOfWork
 
 ``` csharp
 /// <summary>
